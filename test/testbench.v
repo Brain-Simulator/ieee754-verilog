@@ -27,49 +27,46 @@ initial
 begin
   $dumpfile("bin/1.vcd");
   $dumpvars(0, STEP1);
-  $monitor ("TEST %b %b %b", inputA, inputB, outputC);
   
   //start the simulation
   clk = 0;
-  add_sub = 0;
+  add_sub = 0; //only add
   
   {inputA,inputB} = 0;
   `define DELAY 6
-  #`DELAY {inputA,inputB} = {`CS1dot5,`CS0dot5};
-  #`DELAY {inputA,inputB} = {`CS1dot5,`CS1dot5};
-  #`DELAY {inputA,inputB} = {`CS0dot5,`CS0dot5};
-  #`DELAY {inputA,inputB} = {`CS0dot5,`CS1dot5};
-  #`DELAY {inputA,inputB} = {`CS1,`CS1};
-  #`DELAY {inputA,inputB} = {`CS2,`CS2};
-  #`DELAY {inputA,inputB} = {`CS2,`CS1};
-  #`DELAY {inputA,inputB} = {`CS1,`CS2};
-  #`DELAY {inputA,inputB} = {`CS3,`CS3};
-  #`DELAY {inputA,inputB} = {`CS1,`CS3};
-  #`DELAY {inputA,inputB} = {`CS3,`CS1};
-  #`DELAY {inputA,inputB} = {`CS4,`CS4};
-  #`DELAY {inputA,inputB} = {`CS4,`CS3};
-  #`DELAY {inputA,inputB} = {`CS3,`CS4};
-  #`DELAY {inputA,inputB} = {`CS4,`CS2};
-  #`DELAY {inputA,inputB} = {`CS2,`CS4};
-  #`DELAY {inputA,inputB} = {`CS4,`CS1dot5};
-  #`DELAY {inputA,inputB} = {`CS1dot5,`CS4};
-  #`DELAY {inputA,inputB} = {`CS4,`CS0dot5};
-  #`DELAY {inputA,inputB} = {`CS0dot5,`CS4};
-  #`DELAY {inputA,inputB} = {`CS5,`CS4};
-  #`DELAY {inputA,inputB} = {`CS5,`CS5};
-  #`DELAY {inputA,inputB} = {`CS0,`CS0};
-  #`DELAY {inputA,inputB} = {`CS1,`CS0};
-  #`DELAY {inputA,inputB} = {`CS0,`CS1};
-  #`DELAY {inputA,inputB} = {`CS6,`CS1};
-  #`DELAY {inputA,inputB} = {`CS1,`CS6};
-  #`DELAY {inputA,inputB} = {`CS6,`CS0dot5};
-  #`DELAY {inputA,inputB} = {`CS0dot5,`CS6};
-  #`DELAY {inputA,inputB} = {`CS7,`CS6};
-  #`DELAY {inputA,inputB} = {`CS8,`CS8};
-  #`DELAY {inputA,inputB} = {`CS8,`CS7};
-  #`DELAY {inputA,inputB} = {`CS0dot5,`CS7dot5};
-  #`DELAY {inputA,inputB} = {`CS1dot5,`CS7dot5};
+  `define TEST_OP(val1,val2)\
+			#`DELAY {inputA,inputB} = {val1,val2}; \
+			#`DELAY $display("TEST1 %b %b %b", inputA, inputB, outputC); \
   
+  `define TEST1(val1,val2) \
+			`TEST_OP(val1,val2)\
+			`TEST_OP(val2,val1)
+  
+  `TEST1(`CS1dot5,`CS0dot5)
+  `TEST1(`CS1dot5,`CS1dot5)
+  `TEST1(`CS0dot5,`CS0dot5)
+  `TEST1(`CS1,`CS1)
+  `TEST1(`CS2,`CS2)
+  `TEST1(`CS1,`CS2)
+  `TEST1(`CS3,`CS3)
+  `TEST1(`CS1,`CS3)
+  `TEST1(`CS4,`CS4)
+  `TEST1(`CS3,`CS4)
+  `TEST1(`CS2,`CS4)
+  `TEST1(`CS4,`CS1dot5)
+  `TEST1(`CS4,`CS0dot5)
+  `TEST1(`CS5,`CS4)
+  `TEST1(`CS5,`CS5)
+  `TEST1(`CS0,`CS0)
+  `TEST1(`CS1,`CS0)
+  `TEST1(`CS6,`CS1)
+  `TEST1(`CS6,`CS0dot5)
+  `TEST1(`CS7,`CS6)
+  `TEST1(`CS8,`CS8)
+  `TEST1(`CS8,`CS7)
+  `TEST1(`CS0dot5,`CS7dot5)
+  `TEST1(`CS1dot5,`CS7dot5)
+   //$display("TEST1 %b %b %b", inputA, inputB, outputC);
   #`DELAY $finish;
 end
 

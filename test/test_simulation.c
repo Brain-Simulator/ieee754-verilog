@@ -25,14 +25,14 @@ int main()
 		return -1;
 	}
 	
-	while(scanf("%4s",inA) == 1)
+	while(scanf("%5s",inA) == 1)
 	{
-		if(strcmp(inA,"TEST") != 0)
+		if(strcmp(inA,"TEST1") != 0)
 		{
 			while(getchar() != '\n');//skip until end of the line
 			continue;
 		}
-		scanf("%s %s %s",inA, inB, outC);
+		scanf("%s %s %s", inA, inB, outC);
 		A = str2float(inA);
 		B = str2float(inB);
 		C = str2float(outC);

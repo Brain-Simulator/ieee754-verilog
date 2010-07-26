@@ -22,7 +22,7 @@
 // Options
 //
 //use `undef or `define to change options
-`undef REG_S1_TO_S2
+`define REG_S1_TO_S2
 
 ///////////////////////////////////////////////
 // MODULE: ieee_adder_prepare_input
@@ -173,15 +173,14 @@ module ieee_adder_step1(
 		reg [`EXPO_LEN-1:0] s1_exponentB;
 		reg [`SIGNIFICAND_LEN:-`GUARDBITS] s1_significandA;
 		reg [`SIGNIFICAND_LEN:-`GUARDBITS] s1_significandB;
-	
 		always@(posedge clock_in)
 		begin
-			s1_signA <= signA;
-			s1_signB <= signB;
-			s1_exponentA <= exponentA;
-			s1_exponentB <= s1_exponentB;
-			s1_significandA <= s1_significandA;
-			s1_significandB <= s1_significandB;
+			s1_signA = signA;
+			s1_signB = signB;
+			s1_exponentA = exponentA;
+			s1_exponentB = exponentB;
+			s1_significandA = s1_significandA;
+			s1_significandB = s1_significandB;
 		end
 	`else
 		wire s1_signA;
