@@ -2,9 +2,9 @@ from __future__ import print_function
 import re
 import sys
 
-def typeFind(val, types):
-	for name in types:
-		if types[name] == val:
+def widthFind(val, widths):
+	for name in widths:
+		if widths[name] == val:
 			return name
 	print("Could not find a type: " + val)
 	sys.exit(-1)
@@ -32,7 +32,7 @@ def readNoComments(f):
 			file += line + " "
 	return file
 
-def readModules(file, module_name, types):
+def readModules(file, module_name, widths):
 	parts = file.split("module "+module_name+"_")[1:]
 
 	modules = {}
@@ -67,7 +67,7 @@ def readModules(file, module_name, types):
 				else:
 					type = line2[:pos].strip()
 					ioname = line2[pos:].strip()
-					typename = typeFind(type, types)
+					typename = widthFind(type, widths)
 				
 				if line.startswith('input'):
 					minputs.append( (typename, ioname))

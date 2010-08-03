@@ -1,5 +1,5 @@
 
-module emir_module3(C,EA,EB,Z);
+module emir_moduleZ(C,EA,EB,Z);
 	input C;
 	input EA;
 	input EB;

@@ -6,12 +6,12 @@ inputs = [('bit','add_sub_bit'), ('number','inputA'), ('number','inputB'), ('bit
 outputs = [('number','outputC')]
 '''
 from __future__ import print_function
-module_name = 'emir'
+pipeline_name = 'emir'
 file_input = 'emir_stages.v'
 file_output = 'emir_gen.v'
 clock_name = 'clock_in'
 
-types = {
+widths = {
 	'bit' : '',
 	'w3' : '[0:2]',
 }
@@ -34,21 +34,22 @@ out.write("//                                        //\n")
 out.write("////////////////////////////////////////////\n")
 out.write('`include "src/defines.v"\n')
 
-out.write("module "+module_name+"(" + 
+out.write("module "+pipeline_name+"(" + 
 	",".join(name for type, name in inputs + outputs) + ")\n")
 
 for type,input in inputs:
-	out.write("\tinput "+types[type]+" " + input + ";\n")
+	out.write("\tinput "+widths[type]+" " + input + ";\n")
 
 for type,output in outputs:
-	out.write("\toutput "+types[type]+" " + output + ";\n")
+	out.write("\toutput "+widths[type]+" " + output + ";\n")
 
 file = readNoComments(open(file_input))
-modules = readModules(file, module_name, types)
+modules = readModules(file, pipeline_name, widths)
+
 modules['__input_stage__'] = {
 	'name':'__input_stage__',
 	'inputs':[],
-	'outputs' : inputs, #imaginary module which provides module inputs
+	'outputs' : inputs, #imaginary module which provides global inputs
 }
 
 stages = [
@@ -56,16 +57,18 @@ stages = [
 		'components':[
 			{'name':'__input_stage__'},
 		],
-		'add_ffs' : False,
 	},
 	{ #Stage 1
 		'components':[
-			{'name':'module3'},
 			{'name':'module2','suffix':'A','override_input':{'D':'D1'}},
 			{'name':'module2','suffix':'B','override_input':{'D':'D2'}},
 			{'name':'module1'},
 		],
-		'add_ffs' : False,
+	},
+	{ #Stage 2
+		'components':[
+			{'name':'moduleZ'},
+		],
 	},
 ]
 
@@ -75,6 +78,8 @@ comp_appear = {}
 for stage_num, stage in enumerate(stages):
 	for component in stage['components']:
 		name = component['name']
+		if name not in modules:
+			raise Exception("Could not find module %s", name)
 		module = modules[name]
 		if 'suffix' in component:
 			name += component['suffix']
@@ -82,9 +87,13 @@ for stage_num, stage in enumerate(stages):
 		#check for a duplicate component
 		if name in comp_appear:
 			raise Exception('Duplicate name module "%s"' % name)
+		component['module_name'] = name
 		map_inputs = {}
 		minputs = []
-		override = component['override_input'] if 'override_input' in component else None
+		moutputs = []
+		#for all inputs of this instance of module
+		override = (component['override_input'] 
+			if 'override_input' in component else None)
 		for type, input in module['inputs']:
 			print(name, ' input ', input)
 			if override and input in override:
@@ -94,19 +103,12 @@ for stage_num, stage in enumerate(stages):
 			map_inputs[input_name] = input
 			minputs.append((type, input_name))
 		
-		comp_appear[name] = {
-			'stage':stage_num,
-			'module_name':name,
-			'inputs':minputs,
-			'map_inputs':map_inputs,
-			'added':False,
-			'on_stack':False,
-		}
 		#for all outputs in this instance of module
 		for type, output_orig in module['outputs']:
 			output = output_orig
 			if 'suffix' in component:
 				output += component['suffix']
+			print(name, ' output ', output)
 			if output not in var_appear:
 				var_appear[output] = []
 			else:
@@ -123,6 +125,17 @@ for stage_num, stage in enumerate(stages):
 					'type':type,
 					'end_stage':stage_num,
 				})
+			moutputs.append((type,output))
+		#add this instance of module
+		comp_appear[name] = {
+			'stage':stage_num,
+			'module_name':component['name'],
+			'inputs':minputs,
+			'outputs':moutputs,
+			'map_inputs':map_inputs,
+			'added':False,
+			'on_stack':False,
+		}
 
 def find_next_var(name, var_appear, start_stage):
 	if name not in var_appear:
@@ -151,7 +164,11 @@ def add_to_stack(variables, stack, stage_num):
 				count += 1
 	return count
 
-#add outputs to processing stack
+#add new column to stages
+for stage in stages:
+	stage['order'] = []
+
+#processing stack
 stack = []
 add_to_stack(outputs, stack, len(stages))
 while len(stack) > 0:
@@ -159,53 +176,68 @@ while len(stack) > 0:
 	if comp_appear[name]['added']:
 		stack.pop()
 		continue
-	
-	count = add_to_stack(comp_appear[name]['inputs'], stack, comp_appear[name]['stage'])
+	count = add_to_stack(comp_appear[name]['inputs'], 
+		stack, comp_appear[name]['stage'])
 	if count == 0:
 		print('adding module',name)
+		stage = comp_appear[name]['stage']
+		stages[stage]['order'].append(name)
+		comp_appear[name]['added'] = True
 		stack.pop()
 
+print("=======COMPONENTS=========")
 for name in comp_appear:
 	print('comp',name)
-	print(comp_appear[name])
+	print(' ',comp_appear[name])
+
+print("=======VARIABLES=========")
 for name in var_appear:
-	print('var', name, end=" ")
-	print(var_appear[name])
+	print('var', name)
+	print(' ',var_appear[name])
+
+print("=======STAGES=========")
+for stage_num, stage in enumerate(stages):
+	print('Number:', stage_num, '=>', stage['order'])
+
+print("================")
+#write output
+available_vars = []
+for stage_num, stage in enumerate(stages[1:], start = 1):
+	print('stage',stage_num,stage)
+	out.write("\t/////////////\n")
+	out.write("\t// STAGE %d //\n" % stage_num)
+	out.write("\t/////////////\n")
+	for name in stage['order']:
+		instance = comp_appear[name]
+		out.write("\t//Outputs of module '%s' with instance '%s'\n"
+			% (instance['module_name'], name))
+		for type, output in instance['outputs']:
+			out.write("\twire %s s%do_%s;\n" % 
+				(widths[type], stage_num, output))
+	for name in stage['order']:
+		instance = comp_appear[name]
+		out.write("\t//Calling instance '%s'\n" % (name))
+		out.write("\t%s_%s S%d_%s_%s (\n\t\t" %( 
+			pipeline_name, instance['module_name'], 
+			stage_num, pipeline_name ,name))
+		inout = []
+		#connect inputs
+		for type, input in comp_appear[name]['inputs']:
+			var = find_next_var(input, var_appear, stage_num)
+			if var['stage'] == 0:
+				input_name = input
+			else:
+				input_name = 's%so_%s'%(var['stage'], input)
+			inout.append("/*input*/.%s(%s)" % (input, input_name))
+		#connect outputs
+		for type, output in comp_appear[name]['outputs']:
+			output_name = "s%do_%s" % (stage_num, output)
+			inout.append("/*output*/.%s(%s)" % (output, output_name))
+		out.write(",\n\t\t".join(inout))
+		out.write("\n\t);\n")
 out.write("endmodule\n")
 
 '''
-///////////////////////////////
-// MODULE: ieee_adder_step1
-///////////////////////////////
-//
-// Connect all stages together
-//
-///////////////////////////////
-
-	//These are outputs of Stage 1
-	wire s1o_signA;
-	wire s1o_signB;
-	wire [`EXPO_LEN-1:0] s1o_exponentA;
-	wire [`EXPO_LEN-1:0] s1o_exponentB;
-	wire [`SIGNIFICAND_LEN:-`GUARDBITS] s1o_significandA;
-	wire [`SIGNIFICAND_LEN:-`GUARDBITS] s1o_significandB;
-	
-	//Call Stage 1
-	ieee_adder_prepare_input S1_PREP_A(
-		.add_sub_bit  (1'b0),//A has + in front
-		.number       (inputA),
-		.sign         (s1o_signA),
-		.exponent     (s1o_exponentA),
-		.significand  (s1o_significandA)
-	);
-	ieee_adder_prepare_input S1_PREP_B(
-		.add_sub_bit   (add_sub_bit),//B might have a - sign in front
-		.number        (inputB),
-		.sign          (s1o_signB),
-		.exponent      (s1o_exponentB),
-		.significand   (s1o_significandB)
-	);
-	
 	//Connect Stage 1 with Stage 2
 	`ifdef REG_S1_TO_S2
 		`include "src/connect_reg.v"
