@@ -1,4 +1,4 @@
-
+/*
 module emir_moduleZ(C,EA,EB,Z);
 	input C;
 	input EA;
@@ -19,3 +19,15 @@ module emir_module1(A,B,C,D2,D1,Y);
 	output Y;
 endmodule
 
+*/
+module emir_prep(A,B,C);
+	input A;
+	input B;
+	output C;
+endmodule
+
+module emir_end(C,Z,Y);
+	input C;
+	output Y;
+	output Z;
+endmodule

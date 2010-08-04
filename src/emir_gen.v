@@ -4,8 +4,8 @@
 //     BY generate.py, DO NOT EDIT!       //
 //                                        //
 ////////////////////////////////////////////
-`include "src/defines.v"
-module emir(A,B,clock_in,Z,Y)
+`include "defines.v"
+module emir(A,B,clock_in,Z,Y);
 	input  A;
 	input  B;
 	input  clock_in;
@@ -14,44 +14,24 @@ module emir(A,B,clock_in,Z,Y)
 	/////////////
 	// STAGE 1 //
 	/////////////
-	//Outputs of module 'module1' with instance 'module1'
+	//Outputs of module 'prep' with instance 'prep'
 	wire  s1o_C;
-	wire [0:2] s1o_D1;
-	wire [0:2] s1o_D2;
+	//Outputs of module 'end' with instance 'end'
 	wire  s1o_Y;
-	//Outputs of module 'module2' with instance 'module2B'
-	wire  s1o_EB;
-	//Outputs of module 'module2' with instance 'module2A'
-	wire  s1o_EA;
-	//Calling instance 'module1'
-	emir_module1 S1_emir_module1 (
+	wire  s1o_Z;
+	//Calling instance 'prep'
+	emir_prep S1_emir_prep (
 		/*input*/.A(A),
 		/*input*/.B(B),
-		/*output*/.C(s1o_C),
-		/*output*/.D1(s1o_D1),
-		/*output*/.D2(s1o_D2),
-		/*output*/.Y(s1o_Y)
+		/*output*/.C(s1o_C)
 	);
-	//Calling instance 'module2B'
-	emir_module2 S1_emir_module2B (
-		/*input*/.D2(s1o_D2),
-		/*output*/.EB(s1o_EB)
-	);
-	//Calling instance 'module2A'
-	emir_module2 S1_emir_module2A (
-		/*input*/.D1(s1o_D1),
-		/*output*/.EA(s1o_EA)
-	);
-	/////////////
-	// STAGE 2 //
-	/////////////
-	//Outputs of module 'moduleZ' with instance 'moduleZ'
-	wire  s2o_Z;
-	//Calling instance 'moduleZ'
-	emir_moduleZ S2_emir_moduleZ (
+	//Calling instance 'end'
+	emir_end S1_emir_end (
 		/*input*/.C(s1o_C),
-		/*input*/.EA(s1o_EA),
-		/*input*/.EB(s1o_EB),
-		/*output*/.Z(s2o_Z)
+		/*output*/.Y(s1o_Y),
+		/*output*/.Z(s1o_Z)
 	);
+	//Connect stage 1 to pipeline output
+	assign Y = s1o_Y;
+	assign Z = s1o_Z;
 endmodule
