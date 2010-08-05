@@ -1,0 +1,18 @@
+//modules of ieee adder
+
+`define TOTALBITS 32 //number of bits in representation of a number
+`define SIGN_LEN 1 //sign of a number needs 1 bit
+`define EXPO_LEN 8 //length of exponent part
+`define SIGNIF_LEN `TOTALBITS - `SIGN_LEN - `EXPO_LEN // mantissa or significand of a number
+`define GUARDBITS 3 //additional bits added to make addition/subtraction more precise
+
+`define LASTBIT `TOTALBITS - 1
+`define FIRSTBIT 0
+`define EXPO_LASTBIT `LASTBIT - `SIGN_LEN
+`define EXPO_FIRSTBIT `EXPO_LASTBIT - `EXPO_LEN + 1
+`define SIGNIF_LASTBIT `SIGNIF_LEN - 1
+`define SIGNIF_FIRSTBIT 0
+
+`define WIDTH_NUMBER [`LASTBIT:`FIRSTBIT]
+`define WIDTH_SIGNIF [`SIGNIF_LEN:-`GUARDBITS]
+`define WIDTH_EXPO   [`EXPO_LEN-1:0]

@@ -26,7 +26,7 @@ wire [31:0] outputC;
 initial
 begin
   $dumpfile("bin/1.vcd");
-  $dumpvars(0, STEP1);
+  $dumpvars(0, ADDER);
   
   //start the simulation
   clk = 0;
@@ -70,7 +70,7 @@ begin
   #`DELAY $finish;
 end
 
-ieee_adder_step1 STEP1(
+ieee_adder ADDER(
 	.clock_in(clk),
 	.add_sub_bit(add_sub),
 	.inputA(inputA),
