@@ -14,6 +14,21 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	/////////////
 	// STAGE 1 //
 	/////////////
+	//Outputs of module 'bigger_exp' with instance 'bigger_exp'
+	wire `WIDTH_EXPO s1o_big_expo;
+	//Outputs of module 'shift_signif' with instance 'shift_signif'
+	wire `WIDTH_SIGNIF s1o_signifA_shift_1;
+	wire `WIDTH_SIGNIF s1o_signifB_shift_1;
+	//Outputs of module 'swap_signif' with instance 'swap_signif'
+	wire `WIDTH_SIGNIF s1o_signifA_shift;
+	wire `WIDTH_SIGNIF s1o_signifB_shift;
+	//Outputs of module 'opsub' with instance 'opsub'
+	wire `WIDTH_SIGNIF_PART s1o_out_signif_sub;
+	wire `WIDTH_EXPO s1o_out_exponent_sub;
+	wire  s1o_signif_nonzero;
+	//Outputs of module 'opadd' with instance 'opadd'
+	wire `WIDTH_SIGNIF_PART s1o_out_signif_add;
+	wire `WIDTH_EXPO s1o_out_exponent_add;
 	//Outputs of module 'compare' with instance 'compare'
 	wire  s1o_expA_bigger_expB;
 	wire  s1o_inputA_bigger_inputB;
@@ -21,19 +36,60 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	//Outputs of module 'prepare_input' with instance 'prepare_inputB'
 	wire  s1o_signB;
 	wire `WIDTH_EXPO s1o_exponentB;
-	wire `WIDTH_SIGNIF s1o_significandB;
+	wire `WIDTH_SIGNIF s1o_signifB;
 	//Outputs of module 'prepare_input' with instance 'prepare_inputA'
 	wire  s1o_signA;
 	wire `WIDTH_EXPO s1o_exponentA;
-	wire `WIDTH_SIGNIF s1o_significandA;
-	//Outputs of module 'stage3' with instance 'stage3'
+	wire `WIDTH_SIGNIF s1o_signifA;
+	//Outputs of module 'final' with instance 'final'
 	wire `WIDTH_NUMBER s1o_outputC;
+	//Calling instance 'bigger_exp'
+	ieee_adder_bigger_exp S1_ieee_adder_bigger_exp (
+		/*input*/.expA_bigger_expB(s1o_expA_bigger_expB),
+		/*input*/.exponentA(s1o_exponentA),
+		/*input*/.exponentB(s1o_exponentB),
+		/*output*/.big_expo(s1o_big_expo)
+	);
+	//Calling instance 'shift_signif'
+	ieee_adder_shift_signif S1_ieee_adder_shift_signif (
+		/*input*/.expA_bigger_expB(s1o_expA_bigger_expB),
+		/*input*/.signifA(s1o_signifA),
+		/*input*/.signifB(s1o_signifB),
+		/*input*/.shift_amount(s1o_shift_amount),
+		/*output*/.signifA_shift_1(s1o_signifA_shift_1),
+		/*output*/.signifB_shift_1(s1o_signifB_shift_1)
+	);
+	//Calling instance 'swap_signif'
+	ieee_adder_swap_signif S1_ieee_adder_swap_signif (
+		/*input*/.inputA_bigger_inputB(s1o_inputA_bigger_inputB),
+		/*input*/.signifA_shift_1(s1o_signifA_shift_1),
+		/*input*/.signifB_shift_1(s1o_signifB_shift_1),
+		/*output*/.signifA_shift(s1o_signifA_shift),
+		/*output*/.signifB_shift(s1o_signifB_shift)
+	);
+	//Calling instance 'opsub'
+	ieee_adder_opsub S1_ieee_adder_opsub (
+		/*input*/.signifA_shift(s1o_signifA_shift),
+		/*input*/.signifB_shift(s1o_signifB_shift),
+		/*input*/.big_expo(s1o_big_expo),
+		/*output*/.out_signif_sub(s1o_out_signif_sub),
+		/*output*/.out_exponent_sub(s1o_out_exponent_sub),
+		/*output*/.signif_nonzero(s1o_signif_nonzero)
+	);
+	//Calling instance 'opadd'
+	ieee_adder_opadd S1_ieee_adder_opadd (
+		/*input*/.signifA_shift(s1o_signifA_shift),
+		/*input*/.signifB_shift(s1o_signifB_shift),
+		/*input*/.big_expo(s1o_big_expo),
+		/*output*/.out_signif_add(s1o_out_signif_add),
+		/*output*/.out_exponent_add(s1o_out_exponent_add)
+	);
 	//Calling instance 'compare'
 	ieee_adder_compare S1_ieee_adder_compare (
 		/*input*/.exponentA(s1o_exponentA),
 		/*input*/.exponentB(s1o_exponentB),
-		/*input*/.significandA(s1o_significandA),
-		/*input*/.significandB(s1o_significandB),
+		/*input*/.signifA(s1o_signifA),
+		/*input*/.signifB(s1o_signifB),
 		/*output*/.expA_bigger_expB(s1o_expA_bigger_expB),
 		/*output*/.inputA_bigger_inputB(s1o_inputA_bigger_inputB),
 		/*output*/.shift_amount(s1o_shift_amount)
@@ -44,24 +100,27 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*input*/.number(inputB),
 		/*output*/.sign(s1o_signB),
 		/*output*/.exponent(s1o_exponentB),
-		/*output*/.significand(s1o_significandB)
+		/*output*/.signif(s1o_signifB)
 	);
 	//Calling instance 'prepare_inputA'
 	ieee_adder_prepare_input S1_ieee_adder_prepare_inputA (
-		/*input*/.add_sub_bit(add_sub_bit),
+		/*input*/.add_sub_bit(1'b0),
 		/*input*/.number(inputA),
 		/*output*/.sign(s1o_signA),
 		/*output*/.exponent(s1o_exponentA),
-		/*output*/.significand(s1o_significandA)
+		/*output*/.signif(s1o_signifA)
 	);
-	//Calling instance 'stage3'
-	ieee_adder_stage3 S1_ieee_adder_stage3 (
-		/*input*/.significandA(s1o_significandA),
-		/*input*/.significandB(s1o_significandB),
+	//Calling instance 'final'
+	ieee_adder_final S1_ieee_adder_final (
+		/*input*/.signA(s1o_signA),
+		/*input*/.signB(s1o_signB),
+		/*input*/.inputA_bigger_inputB(s1o_inputA_bigger_inputB),
+		/*input*/.out_exponent_add(s1o_out_exponent_add),
+		/*input*/.out_signif_add(s1o_out_signif_add),
+		/*input*/.out_exponent_sub(s1o_out_exponent_sub),
+		/*input*/.out_signif_sub(s1o_out_signif_sub),
+		/*input*/.signif_nonzero(s1o_signif_nonzero),
 		/*input*/.shift_amount(s1o_shift_amount),
-		/*input*/.exponentA(s1o_exponentA),
-		/*input*/.exponentB(s1o_exponentB),
-		/*input*/.expA_bigger_expB(s1o_expA_bigger_expB),
 		/*output*/.outputC(s1o_outputC)
 	);
 	//Connect stage 1 to pipeline output

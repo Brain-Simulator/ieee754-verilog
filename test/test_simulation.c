@@ -3,7 +3,7 @@
 
 float str2float(char *a)
 {
-	long out=0,i;
+	unsigned long out=0,i;
 	for(i=0;a[i];i++)
 	{
 		out *= 2;
@@ -11,6 +11,18 @@ float str2float(char *a)
 			out++;
 	}
 	return *((float*)&out);
+}
+
+void float2str(float in, char *out)
+{
+	unsigned long a = *(unsigned long*)(&in);
+	int i;
+	out[32] = 0;
+	for(i=31;i>=0;i--)
+	{
+		out[i] = (a % 2) + '0';
+		a /= 2;
+	}
 }
 
 int main()
@@ -38,8 +50,10 @@ int main()
 		C = str2float(outC);
 		if(A + B != C)
 		{
+			char correct[35];
+			float2str(A + B, correct);
 			printf("Test failed: %f + %f = %f != %f\n",A,B,A+B,C);
-			printf("%10s %s + %s != %s\n","",inA,inB,outC);
+			printf("%5s %s + %s = \n%s\n%s\n","", inA, inB, correct, outC);
 		}
 		else
 		{

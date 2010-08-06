@@ -23,6 +23,19 @@ wire [31:0] outputC;
 `define CS7dot5 {1'b0, 8'b10000001, 3'b111,{20{1'b0}}}//7.5
 `define CS8 {1'b0, 8'b10000010, {23{1'b0}}}//8.0
 
+always
+begin
+	#1 clk = ! clk;
+end
+
+ieee_adder ADDER(
+	.clock_in(clk),
+	.add_sub_bit(add_sub),
+	.inputA(inputA),
+	.inputB(inputB),
+	.outputC(outputC)
+);
+
 initial
 begin
   $dumpfile("bin/1.vcd");
@@ -30,7 +43,7 @@ begin
   
   //start the simulation
   clk = 0;
-  add_sub = 0; //only add
+  add_sub = 0; //addition
   
   {inputA,inputB} = 0;
   `define DELAY 6
@@ -40,7 +53,9 @@ begin
   
   `define TEST1(val1,val2) \
 			`TEST_OP(val1,val2)\
-			`TEST_OP(val2,val1)
+			`TEST_OP(val2,val1)\
+			`TEST_OP(val1, 1<<31 ^ val2)\
+			`TEST_OP(val2, 1<<31 ^ val1)
   
   `TEST1(`CS1dot5,`CS0dot5)
   `TEST1(`CS1dot5,`CS1dot5)
@@ -48,7 +63,7 @@ begin
   `TEST1(`CS1,`CS1)
   `TEST1(`CS2,`CS2)
   `TEST1(`CS1,`CS2)
-  `TEST1(`CS3,`CS3)
+ /* `TEST1(`CS3,`CS3)
   `TEST1(`CS1,`CS3)
   `TEST1(`CS4,`CS4)
   `TEST1(`CS3,`CS4)
@@ -65,22 +80,10 @@ begin
   `TEST1(`CS8,`CS8)
   `TEST1(`CS8,`CS7)
   `TEST1(`CS0dot5,`CS7dot5)
-  `TEST1(`CS1dot5,`CS7dot5)
+  `TEST1(`CS1dot5,`CS7dot5)*/
+  
    //$display("TEST1 %b %b %b", inputA, inputB, outputC);
   #`DELAY $finish;
-end
-
-ieee_adder ADDER(
-	.clock_in(clk),
-	.add_sub_bit(add_sub),
-	.inputA(inputA),
-	.inputB(inputB),
-	.outputC(outputC)
-);
-
-always
-begin
-	#1 clk = ! clk;
 end
 
 endmodule

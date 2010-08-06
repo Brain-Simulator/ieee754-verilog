@@ -1,13 +1,6 @@
 from __future__ import print_function
 from config import *
 
-widths = {
-	'bit' : '',
-	'number':'`WIDTH_NUMBER',
-	'signif':'`WIDTH_SIGNIF',
-	'expo'  :'`WIDTH_EXPO',
-}
-
 import re
 import string
 import random
@@ -41,6 +34,14 @@ modules['__input_stage__'] = {
 	'inputs':[],
 	'outputs' : inputs, #imaginary module which provides global inputs
 }
+
+stages.insert( 0,
+	{ #Stage 0
+		'components':[
+			{'name':'__input_stage__'},
+		],
+	},
+)
 
 #populate var_appear and comp_appear
 var_appear = {}
@@ -121,6 +122,8 @@ def find_next_var(name, var_appear, start_stage):
 def add_to_stack(variables, stack, stage_num):
 	count = 0
 	for type, output in variables:
+		if output[0].isdigit():
+			continue
 		var = find_next_var(output, var_appear, stage_num)
 		if var is None:
 			raise Exception("%s not found" % output)
@@ -201,20 +204,23 @@ for stage_num, stage in enumerate(stages[1:], start = 1):
 		inout = []
 		#connect inputs of instance
 		for type, input in comp_appear[name]['inputs']:
-			var = find_next_var(input, var_appear, stage_num)
 			#find the name of original input
 			if input in comp_appear[name]['map_inputs']:
 				input_orig = comp_appear[name]['map_inputs'][input]
 			else:
 				input_orig = input
-			
-			if var['stage'] != stage_num:
-				if var['stage'] == 0:
-					input_name = input
-				else:
-					input_name = 's%si_%s'%(stage_num, input)
+			#digits are special
+			if input[0].isdigit():
+				input_name = input
 			else:
-				input_name = 's%so_%s'%(var['stage'], input)
+				var = find_next_var(input, var_appear, stage_num)
+				if var['stage'] != stage_num:
+					if var['stage'] == 0:
+						input_name = input
+					else:
+						input_name = 's%si_%s'%(stage_num, input)
+				else:
+					input_name = 's%so_%s'%(var['stage'], input)
 			inout.append("/*input*/.%s(%s)" %(input_orig, input_name))
 		#connect outputs of instance
 		for type, output in comp_appear[name]['outputs']:

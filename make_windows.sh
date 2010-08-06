@@ -7,11 +7,12 @@
 # * python        - http://www.python.org/
 # * verilogscript - http://github.com/emiraga/verilogscript
 #
+
 echo 'Configuring environment'
 export PATH=$PATH:/x/verilog/iverilog/bin:/c/python27/
 export VSCRIPT=/x/VerilogScript/VerilogScript.py
 
-echo 'generating pipeline'
+echo 'Generating pipeline'
 python $VSCRIPT src/ieee.vs || exit
 cd src
 python generate.py || exit
@@ -20,7 +21,7 @@ rm src/ieee.v
 
 echo 'Compiling verilog'
 rm -f bin/single.out
-python $VSCRIPT src/ieee.vs src/ieee_adder.v test/testbench.v -e "iverilog -o bin/single.out" || exit
+python $VSCRIPT src/ieee.vs src/ieee_adder.v test/testbench.v -e "iverilog -Wall -o bin/single.out" || exit
 
 echo 'Running simulation'
 rm -f bin/simulation.out
