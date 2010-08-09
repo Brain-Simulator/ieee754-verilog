@@ -9,8 +9,11 @@
 #
 
 echo 'Configuring environment'
-export PATH=$PATH:/x/verilog/iverilog/bin:/c/python27/
-export VSCRIPT=/x/VerilogScript/VerilogScript.py
+#export PATH=$PATH:/x/verilog/iverilog/bin:/c/python27/
+export PATH=$PATH:/c/iverilog/bin/:/c/python27/
+export VSCRIPT=../VerilogScript/VerilogScript.py
+
+mkdir -p bin
 
 echo 'Generating pipeline'
 python $VSCRIPT src/ieee.vs || exit
@@ -25,7 +28,7 @@ python $VSCRIPT src/ieee.vs src/ieee_adder.v test/testbench.v -e "iverilog -Wall
 
 echo 'Running simulation'
 rm -f bin/simulation.out
-vvp bin/single.out | tee bin/simulation.out
+vvp bin/single.out > bin/simulation.out
 
 echo 'Compiling test'
 rm -f bin/test.exe

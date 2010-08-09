@@ -23,9 +23,11 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	wire `WIDTH_SIGNIF s1o_signifA_shift;
 	wire `WIDTH_SIGNIF s1o_signifB_shift;
 	//Outputs of module 'opsub' with instance 'opsub'
+	wire `WIDTH_SIGNIF s1o_out_signif_sub_1;
+	wire  s1o_signif_nonzero;
+	//Outputs of module 'normalize_sub' with instance 'normalize_sub'
 	wire `WIDTH_SIGNIF_PART s1o_out_signif_sub;
 	wire `WIDTH_EXPO s1o_out_exponent_sub;
-	wire  s1o_signif_nonzero;
 	//Outputs of module 'opadd' with instance 'opadd'
 	wire `WIDTH_SIGNIF_PART s1o_out_signif_add;
 	wire `WIDTH_EXPO s1o_out_exponent_add;
@@ -45,7 +47,7 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	wire `WIDTH_NUMBER s1o_outputC;
 	//Calling instance 'bigger_exp'
 	ieee_adder_bigger_exp S1_ieee_adder_bigger_exp (
-		/*input*/.expA_bigger_expB(s1o_expA_bigger_expB),
+		/*input*/.inputA_bigger_inputB(s1o_inputA_bigger_inputB),
 		/*input*/.exponentA(s1o_exponentA),
 		/*input*/.exponentB(s1o_exponentB),
 		/*output*/.big_expo(s1o_big_expo)
@@ -72,9 +74,15 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*input*/.signifA_shift(s1o_signifA_shift),
 		/*input*/.signifB_shift(s1o_signifB_shift),
 		/*input*/.big_expo(s1o_big_expo),
-		/*output*/.out_signif_sub(s1o_out_signif_sub),
-		/*output*/.out_exponent_sub(s1o_out_exponent_sub),
+		/*output*/.out_signif_sub_1(s1o_out_signif_sub_1),
 		/*output*/.signif_nonzero(s1o_signif_nonzero)
+	);
+	//Calling instance 'normalize_sub'
+	ieee_adder_normalize_sub S1_ieee_adder_normalize_sub (
+		/*input*/.out_signif_sub_1(s1o_out_signif_sub_1),
+		/*input*/.big_expo(s1o_big_expo),
+		/*output*/.out_signif_sub(s1o_out_signif_sub),
+		/*output*/.out_exponent_sub(s1o_out_exponent_sub)
 	);
 	//Calling instance 'opadd'
 	ieee_adder_opadd S1_ieee_adder_opadd (

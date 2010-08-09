@@ -17,6 +17,7 @@ widths = {
 	'signif':'`WIDTH_SIGNIF',
 	'expo'  :'`WIDTH_EXPO',
 	's_part':'`WIDTH_SIGNIF_PART',
+	'[3:0]':'[3:0]',
 }
 
 stages = [
@@ -34,6 +35,7 @@ stages = [
 			{'name':'bigger_exp'},
 			{'name':'opadd'},
 			{'name':'opsub'},
+			{'name':'normalize_sub',},
 			{'name':'final',},
 		],
 	},

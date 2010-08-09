@@ -25,7 +25,7 @@ void float2str(float in, char *out)
 	}
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 	float A,B,C;
 	int t_success=0, t_count=0;
@@ -53,15 +53,16 @@ int main()
 			char correct[35];
 			float2str(A + B, correct);
 			printf("Test failed: %f + %f = %f != %f\n",A,B,A+B,C);
-			printf("%5s %s + %s = \n%s\n%s\n","", inA, inB, correct, outC);
+			printf("%5s %s + %s = \n == %s\n != %s\n","", inA, inB, correct, outC);
 		}
 		else
 		{
-			printf("Test OK! (%.2f + %.2f = %.2f)\n", A, B, C);
+			//printf("Test OK! (%.2f + %.2f = %.2f)\n", A, B, C);
 			t_success++;
 		}
 		t_count++;
 	}
+	printf("Succeded %d test, Failed %d tests\n", t_success, t_count - t_success);
 	printf("Sucess: %.2lf%%\n",100 * t_success / (double)t_count );
 	return 0;
 }

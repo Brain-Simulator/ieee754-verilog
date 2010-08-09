@@ -55,21 +55,26 @@ begin
 			`TEST_OP(val1,val2)\
 			`TEST_OP(val2,val1)\
 			`TEST_OP(val1, 1<<31 ^ val2)\
-			`TEST_OP(val2, 1<<31 ^ val1)
-  
+			`TEST_OP(val2, 1<<31 ^ val1)\
+			`TEST_OP(1<<31 ^ val1, val2)\
+			`TEST_OP(1<<31 ^ val2, val1)\
+			`TEST_OP(1<<31 ^ val1, 1<<31 ^ val2)\
+			`TEST_OP(1<<31 ^ val2, 1<<31 ^ val1)
+  if(1)//test all
+  begin
   `TEST1(`CS1dot5,`CS0dot5)
   `TEST1(`CS1dot5,`CS1dot5)
   `TEST1(`CS0dot5,`CS0dot5)
   `TEST1(`CS1,`CS1)
   `TEST1(`CS2,`CS2)
   `TEST1(`CS1,`CS2)
- /* `TEST1(`CS3,`CS3)
+  `TEST1(`CS3,`CS3)
   `TEST1(`CS1,`CS3)
   `TEST1(`CS4,`CS4)
   `TEST1(`CS3,`CS4)
   `TEST1(`CS2,`CS4)
-  `TEST1(`CS4,`CS1dot5)
   `TEST1(`CS4,`CS0dot5)
+  `TEST1(`CS4,`CS1dot5)
   `TEST1(`CS5,`CS4)
   `TEST1(`CS5,`CS5)
   `TEST1(`CS0,`CS0)
@@ -80,8 +85,17 @@ begin
   `TEST1(`CS8,`CS8)
   `TEST1(`CS8,`CS7)
   `TEST1(`CS0dot5,`CS7dot5)
-  `TEST1(`CS1dot5,`CS7dot5)*/
-  
+  `TEST1(`CS1dot5,`CS7dot5)
+  `TEST1(`CS8,`CS0dot5)
+  `TEST1(`CS8,`CS1dot5)
+  /*
+  */
+   end
+   else
+   begin
+	//test one instance
+	`TEST1(`CS4,`CS0dot5)
+   end
    //$display("TEST1 %b %b %b", inputA, inputB, outputC);
   #`DELAY $finish;
 end

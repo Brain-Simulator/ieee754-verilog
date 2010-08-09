@@ -38,6 +38,10 @@ def readModules(file, module_name, widths):
 	modules = {}
 
 	for module in parts:
+		end = module.find('endmodule')
+		if end < 0:
+			raise Exception('endmodule not found')
+		module = module[:end]
 		name = re.match('[A-Za-z0-9_]+',module).group(0)
 		print('Found a module: "'+name+'"')
 		posopen = module.find('(')
@@ -68,13 +72,18 @@ def readModules(file, module_name, widths):
 					type = line2[:pos].strip()
 					ioname = line2[pos:].strip()
 					typename = widthFind(type, widths)
-				
+				if ioname.startswith('__'):
+					continue
 				if line.startswith('input'):
 					minputs.append( (typename, ioname))
+					#print('  input',ioname)
 				else:
 					moutputs.append( (typename, ioname))
+					#print('  output',ioname)
 				if ioname not in minouts:
+					print("------------------------------------------")
 					print("Warning:", ioname, "is missing in I/O list.")
+					print("------------------------------------------")
 		modules[name] = {
 			'name':name,
 			'inputs':minputs,

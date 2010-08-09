@@ -1,4 +1,3 @@
-//modules of ieee adder
 
 `define TOTALBITS 32 //number of bits in representation of a number
 `define SIGN_LEN 1 //sign of a number needs 1 bit
@@ -14,6 +13,9 @@
 `define SIGNIF_FIRSTBIT 0
 
 `define WIDTH_NUMBER [`LASTBIT:`FIRSTBIT]
+
 `define WIDTH_SIGNIF [`SIGNIF_LEN:-`GUARDBITS]
+`define WLEN_SIGNIF `SIGNIF_LEN + `GUARDBITS + 1
+
 `define WIDTH_SIGNIF_PART [`SIGNIF_LEN-1:0]
 `define WIDTH_EXPO [`EXPO_LEN-1:0]
