@@ -25,6 +25,13 @@ void float2str(float in, char *out)
 	}
 }
 
+int fequal(float a, float b)
+{
+	long ai = *(long*)&a;
+	long bi = *(long*)&b;
+	return ai == bi;
+}
+
 int main(int argc, char *argv[])
 {
 	float A,B,C;
@@ -48,7 +55,7 @@ int main(int argc, char *argv[])
 		A = str2float(inA);
 		B = str2float(inB);
 		C = str2float(outC);
-		if(A + B != C)
+		if(! fequal(A + B, C))
 		{
 			char correct[35];
 			float2str(A + B, correct);

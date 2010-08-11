@@ -80,39 +80,44 @@ module ieee_adder_opsub(
 	output signif_nonzero):
 	//Subtract two significands and store the borrow borrow_signif
 	out_signif_sub_1 := signifA_shift - signifB_shift
-	signif_nonzero := |out_signif_sub_1
-	
+	signif_nonzero := |(out_signif_sub_1)
+
 module ieee_adder_normalize_sub(
 	input `WIDTH_SIGNIF out_signif_sub_1,
 	output `WIDTH_SIGNIF_PART out_signif_sub,
 	input `WIDTH_EXPO big_expo,
 	output `WIDTH_EXPO out_exponent_sub):
-	function [3:0] normalize4:
+	function [4:0] normalize4:
 		input `WIDTH_SIGNIF __number
 		casex(__number):
-			{ 0'b0,1'b1,26'bx}: normalize4 = 4'd0;
-			{ 1'b0,1'b1,25'bx}: normalize4 = 4'd1;
-			{ 2'b0,1'b1,24'bx}: normalize4 = 4'd2;
-			{ 3'b0,1'b1,23'bx}: normalize4 = 4'd3;
-			{ 4'b0,1'b1,22'bx}: normalize4 = 4'd4;
-			{ 5'b0,1'b1,21'bx}: normalize4 = 4'd5;
-			{ 6'b0,1'b1,20'bx}: normalize4 = 4'd6;
-			{ 7'b0,1'b1,19'bx}: normalize4 = 4'd7;
-			{ 8'b0,1'b1,18'bx}: normalize4 = 4'd8;
-			{ 9'b0,1'b1,17'bx}: normalize4 = 4'd9;
-			{10'b0,1'b1,16'bx}: normalize4 = 4'd10;
-			{11'b0,1'b1,15'bx}: normalize4 = 4'd11;
-			{12'b0,1'b1,14'bx}: normalize4 = 4'd12;
-			{13'b0,1'b1,13'bx}: normalize4 = 4'd13;
-			{14'b0,1'b1,12'bx}: normalize4 = 4'd14;
-			default: normalize4 = 15;
-	wire [3:0] normal_shift
+			{ 0'b0,1'b1,26'bx}: normalize4 = 5'd0;
+			{ 1'b0,1'b1,25'bx}: normalize4 = 5'd1;
+			{ 2'b0,1'b1,24'bx}: normalize4 = 5'd2;
+			{ 3'b0,1'b1,23'bx}: normalize4 = 5'd3;
+			{ 4'b0,1'b1,22'bx}: normalize4 = 5'd4;
+			{ 5'b0,1'b1,21'bx}: normalize4 = 5'd5;
+			{ 6'b0,1'b1,20'bx}: normalize4 = 5'd6;
+			{ 7'b0,1'b1,19'bx}: normalize4 = 5'd7;
+			{ 8'b0,1'b1,18'bx}: normalize4 = 5'd8;
+			{ 9'b0,1'b1,17'bx}: normalize4 = 5'd9;
+			{10'b0,1'b1,16'bx}: normalize4 = 5'd10;
+			{11'b0,1'b1,15'bx}: normalize4 = 5'd11;
+			{12'b0,1'b1,14'bx}: normalize4 = 5'd12;
+			{13'b0,1'b1,13'bx}: normalize4 = 5'd13;
+			{14'b0,1'b1,12'bx}: normalize4 = 5'd14;
+			{15'b0,1'b1,11'bx}: normalize4 = 5'd15;
+			{16'b0,1'b1,10'bx}: normalize4 = 5'd16;
+			{17'b0,1'b1, 9'bx}: normalize4 = 5'd17;
+			{18'b0,1'b1, 8'bx}: normalize4 = 5'd18;
+			{19'b0,1'b1, 7'bx}: normalize4 = 5'd19;
+			default: normalize4 = 5'd31;
+	wire [4:0] normal_shift
 	normal_shift := normalize4(out_signif_sub_1)
 	wire `WIDTH_SIGNIF out_signif_sub_2
 	out_signif_sub_2 := out_signif_sub_1 << normal_shift
 	out_exponent_sub := big_expo - normal_shift
 	out_signif_sub := out_signif_sub_2[`SIGNIF_LEN-1:0]
- 
+
 module ieee_adder_final(
 	input signA,
 	input signB,

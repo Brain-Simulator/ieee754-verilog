@@ -17,7 +17,7 @@ widths = {
 	'signif':'`WIDTH_SIGNIF',
 	'expo'  :'`WIDTH_EXPO',
 	's_part':'`WIDTH_SIGNIF_PART',
-	'[3:0]':'[3:0]',
+	'[4:0]':'[4:0]',
 }
 
 stages = [
