@@ -89,10 +89,10 @@ module ieee_adder_round( input `WIDTH_SIGNIF number, output `WIDTH_SIGNIF_PART r
         assign round_signif = { ((number[-1:-`GUARD_BITS] > `ROUND_EVEN) || (number[-1:-`GUARD_BITS] == `ROUND_EVEN && number[0] == 1'b1 )) ? number1 + 1 : number1 };
 endmodule
 module ieee_adder_final( input signA, input signB, input inputA_bigger_inputB, input `WIDTH_EXPO out_exponent_add, input `WIDTH_SIGNIF_PART round_signif_add, input `WIDTH_EXPO out_exponent_sub, input `WIDTH_SIGNIF_PART round_signif_sub, input signif_nonzero, input `WIDTH_EXPO shift_amount, output `WIDTH_NUMBER outputC);
-        wire neg_op;
-        assign neg_op = signA ^ signB;
-        wire out_sign;
-        assign out_sign = inputA_bigger_inputB ? signA : signB;
+        wire neg_op = signA ^ signB;
+        wire out_sign = inputA_bigger_inputB ? signA : signB;
         wire nonequal = (|shift_amount) | signif_nonzero;
-        assign outputC = { neg_op ? { nonequal ? {out_sign, out_exponent_sub, round_signif_sub} :	`TOTALBITS'b0 } : {out_sign, out_exponent_add, round_signif_add} };
+        wire is_infinity = neg_op ? (~out_exponent_sub == 0) : (~out_exponent_add == 0);
+        wire `WIDTH_NUMBER out_infinity = {out_sign, `EXPO_ONES, `SIGNIF_LEN'b0};
+        assign outputC = is_infinity ? out_infinity : { neg_op ? { nonequal ? {out_sign, out_exponent_sub, round_signif_sub} :	`TOTALBITS'b0 } : {out_sign, out_exponent_add, round_signif_add} };
 endmodule
