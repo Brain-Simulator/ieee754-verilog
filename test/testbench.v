@@ -47,20 +47,20 @@ begin
   
   {inputA,inputB} = 0;
   `define DELAY 6
-  `define TEST_OP(val1,val2)\
+  `define TEST1_OP(val1,val2)\
 			#`DELAY {inputA,inputB} = {val1,val2}; \
 			#`DELAY $display("TEST1 %b %b %b", inputA, inputB, outputC); \
   
   `define TEST1(val1,val2) \
-			`TEST_OP(val1,val2)\
-			`TEST_OP(val2,val1)\
-			`TEST_OP(val1, 1<<31 ^ val2)\
-			`TEST_OP(val2, 1<<31 ^ val1)\
-			`TEST_OP(1<<31 ^ val1, val2)\
-			`TEST_OP(1<<31 ^ val2, val1)\
-			`TEST_OP(1<<31 ^ val1, 1<<31 ^ val2)\
-			`TEST_OP(1<<31 ^ val2, 1<<31 ^ val1)
-  if(1)//test all
+			`TEST1_OP(val1,val2)\
+			`TEST1_OP(val2,val1)\
+			`TEST1_OP(val1, 1<<31 ^ val2)\
+			`TEST1_OP(val2, 1<<31 ^ val1)\
+			`TEST1_OP(1<<31 ^ val1, val2)\
+			`TEST1_OP(1<<31 ^ val2, val1)\
+			`TEST1_OP(1<<31 ^ val1, 1<<31 ^ val2)\
+			`TEST1_OP(1<<31 ^ val2, 1<<31 ^ val1)
+  if(0)//test all
   begin
   `TEST1(`CS1dot5,`CS0dot5)
   `TEST1(`CS1dot5,`CS1dot5)
@@ -94,7 +94,7 @@ begin
    else
    begin
 	//test one instance
-	`TEST1(`CS4,`CS0dot5)
+	`TEST1_OP(`CS4,`CS0dot5)
    end
    //$display("TEST1 %b %b %b", inputA, inputB, outputC);
   #`DELAY $finish;

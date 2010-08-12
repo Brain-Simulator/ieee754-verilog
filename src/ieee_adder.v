@@ -25,11 +25,15 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	//Outputs of module 'opsub' with instance 'opsub'
 	wire `WIDTH_SIGNIF s1o_out_signif_sub_1;
 	wire  s1o_signif_nonzero;
+	//Outputs of module 'round' with instance 'round_sub'
+	wire `WIDTH_SIGNIF_PART s1o_round_signif_sub;
 	//Outputs of module 'normalize_sub' with instance 'normalize_sub'
-	wire `WIDTH_SIGNIF_PART s1o_out_signif_sub;
+	wire `WIDTH_SIGNIF s1o_out_signif_sub;
 	wire `WIDTH_EXPO s1o_out_exponent_sub;
+	//Outputs of module 'round' with instance 'round_add'
+	wire `WIDTH_SIGNIF_PART s1o_round_signif_add;
 	//Outputs of module 'opadd' with instance 'opadd'
-	wire `WIDTH_SIGNIF_PART s1o_out_signif_add;
+	wire `WIDTH_SIGNIF s1o_out_signif_add;
 	wire `WIDTH_EXPO s1o_out_exponent_add;
 	//Outputs of module 'compare' with instance 'compare'
 	wire  s1o_expA_bigger_expB;
@@ -77,12 +81,22 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*output*/.out_signif_sub_1(s1o_out_signif_sub_1),
 		/*output*/.signif_nonzero(s1o_signif_nonzero)
 	);
+	//Calling instance 'round_sub'
+	ieee_adder_round S1_ieee_adder_round_sub (
+		/*input*/.number(s1o_out_signif_sub),
+		/*output*/.round_signif(s1o_round_signif_sub)
+	);
 	//Calling instance 'normalize_sub'
 	ieee_adder_normalize_sub S1_ieee_adder_normalize_sub (
 		/*input*/.out_signif_sub_1(s1o_out_signif_sub_1),
 		/*input*/.big_expo(s1o_big_expo),
 		/*output*/.out_signif_sub(s1o_out_signif_sub),
 		/*output*/.out_exponent_sub(s1o_out_exponent_sub)
+	);
+	//Calling instance 'round_add'
+	ieee_adder_round S1_ieee_adder_round_add (
+		/*input*/.number(s1o_out_signif_add),
+		/*output*/.round_signif(s1o_round_signif_add)
 	);
 	//Calling instance 'opadd'
 	ieee_adder_opadd S1_ieee_adder_opadd (
@@ -124,9 +138,9 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*input*/.signB(s1o_signB),
 		/*input*/.inputA_bigger_inputB(s1o_inputA_bigger_inputB),
 		/*input*/.out_exponent_add(s1o_out_exponent_add),
-		/*input*/.out_signif_add(s1o_out_signif_add),
+		/*input*/.round_signif_add(s1o_round_signif_add),
 		/*input*/.out_exponent_sub(s1o_out_exponent_sub),
-		/*input*/.out_signif_sub(s1o_out_signif_sub),
+		/*input*/.round_signif_sub(s1o_round_signif_sub),
 		/*input*/.signif_nonzero(s1o_signif_nonzero),
 		/*input*/.shift_amount(s1o_shift_amount),
 		/*output*/.outputC(s1o_outputC)

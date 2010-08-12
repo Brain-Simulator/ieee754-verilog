@@ -34,9 +34,9 @@ int fequal(float a, float b)
 
 int main(int argc, char *argv[])
 {
-	float A,B,C;
+	float A, B, C, correct1, correct2;
 	int t_success=0, t_count=0;
-	char inA[70],inB[70],outC[70];
+	char inA[70],inB[70],outC[70],corC[70];
 	
 	if( sizeof(long) != sizeof(float) )
 	{
@@ -46,21 +46,37 @@ int main(int argc, char *argv[])
 	
 	while(scanf("%5s",inA) == 1)
 	{
-		if(strcmp(inA,"TEST1") != 0)
+		if(strcmp(inA,"TEST1") == 0)
+		{
+			scanf("%s %s %s", inA, inB, outC);
+			A = str2float(inA);
+			B = str2float(inB);
+			C = str2float(outC);
+			correct2 = correct1 = A + B;
+		}
+		else if(strcmp(inA,"TEST2") == 0)
+		{
+			scanf("%s %s %s %s", inA, inB, outC, corC);
+			A = str2float(inA);
+			B = str2float(inB);
+			C = str2float(outC);
+			correct1 = str2float(corC);
+			correct2 = A + B;
+		}
+		else
 		{
 			while(getchar() != '\n');//skip until end of the line
 			continue;
 		}
-		scanf("%s %s %s", inA, inB, outC);
-		A = str2float(inA);
-		B = str2float(inB);
-		C = str2float(outC);
-		if(! fequal(A + B, C))
+		
+		if(! fequal(correct1, C))
 		{
-			char correct[35];
-			float2str(A + B, correct);
-			printf("Test failed: %f + %f = %f != %f\n",A,B,A+B,C);
-			printf("%5s %s + %s = \n == %s\n != %s\n","", inA, inB, correct, outC);
+			char scorrect1[35];
+			char scorrect2[35];
+			float2str(correct1, scorrect1);
+			float2str(correct2, scorrect2);
+			printf("Test failed: %f + %f = %f != %f\n",A, B, correct1, C);
+			printf("%5s %s + %s = \n == %s\n   (%s)\n != %s\n","", inA, inB, scorrect1, scorrect2, outC);
 		}
 		else
 		{

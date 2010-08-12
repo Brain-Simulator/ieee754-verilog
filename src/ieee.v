@@ -4,7 +4,7 @@ module ieee_adder_prepare_input( input add_sub_bit, input `WIDTH_NUMBER number, 
         assign sign = number[`LASTBIT] ^ add_sub_bit;
         assign exponent = number[`EXPO_LASTBIT:`EXPO_FIRSTBIT];
         //Add bit 1 in front in case that exponent is non-zero
-        assign signif = {|exponent, number[`SIGNIF_LASTBIT:`SIGNIF_FIRSTBIT], `GUARDBITS'b0};
+        assign signif = {|exponent, number[`SIGNIF_LASTBIT:`SIGNIF_FIRSTBIT], `GUARD_BITS'b0};
 endmodule
 module ieee_adder_compare( input `WIDTH_EXPO exponentA, input `WIDTH_EXPO exponentB, input `WIDTH_SIGNIF signifA, input `WIDTH_SIGNIF signifB, output expA_bigger_expB, output inputA_bigger_inputB, output `WIDTH_EXPO shift_amount);
         // Compare exponents and significands between inputs
@@ -24,7 +24,7 @@ endmodule
 module ieee_adder_bigger_exp( input inputA_bigger_inputB, input `WIDTH_EXPO exponentA, input `WIDTH_EXPO exponentB, output `WIDTH_EXPO big_expo);
         assign big_expo = inputA_bigger_inputB ? exponentA : exponentB;
 endmodule
-module ieee_adder_opadd( input `WIDTH_SIGNIF signifA_shift, input `WIDTH_SIGNIF signifB_shift, input `WIDTH_EXPO big_expo, output `WIDTH_SIGNIF_PART out_signif_add, output `WIDTH_EXPO out_exponent_add);
+module ieee_adder_opadd( input `WIDTH_SIGNIF signifA_shift, input `WIDTH_SIGNIF signifB_shift, input `WIDTH_EXPO big_expo, output `WIDTH_SIGNIF out_signif_add, output `WIDTH_EXPO out_exponent_add);
         //Add two significands and store the carry of addition
         wire carry_signif;
         wire `WIDTH_SIGNIF out_signif_add_1;
@@ -32,7 +32,7 @@ module ieee_adder_opadd( input `WIDTH_SIGNIF signifA_shift, input `WIDTH_SIGNIF 
         wire `WIDTH_EXPO out_exponent_add_1;
         wire exponent_overflow_add;
         assign {exponent_overflow_add, out_exponent_add_1} = carry_signif ? 1 + big_expo : {1'b0, big_expo};
-        assign out_signif_add = carry_signif ? out_signif_add_1[`SIGNIF_LEN  :1] : out_signif_add_1[`SIGNIF_LEN-1:0];
+        assign out_signif_add = { carry_signif ? out_signif_add_1[`SIGNIF_LEN:-`GUARD_BITS+1] :out_signif_add_1[`SIGNIF_LEN-1:`GUARD_BITS] };
         assign out_exponent_add = out_exponent_add_1;
 endmodule
 module ieee_adder_opsub( input `WIDTH_SIGNIF signifA_shift, input `WIDTH_SIGNIF signifB_shift, input `WIDTH_EXPO big_expo, output `WIDTH_SIGNIF out_signif_sub_1, output signif_nonzero);
@@ -40,7 +40,7 @@ module ieee_adder_opsub( input `WIDTH_SIGNIF signifA_shift, input `WIDTH_SIGNIF 
         assign out_signif_sub_1 = signifA_shift - signifB_shift;
         assign signif_nonzero = |(out_signif_sub_1);
 endmodule
-module ieee_adder_normalize_sub( input `WIDTH_SIGNIF out_signif_sub_1, output `WIDTH_SIGNIF_PART out_signif_sub, input `WIDTH_EXPO big_expo, output `WIDTH_EXPO out_exponent_sub);
+module ieee_adder_normalize_sub( input `WIDTH_SIGNIF out_signif_sub_1, output `WIDTH_SIGNIF out_signif_sub, input `WIDTH_EXPO big_expo, output `WIDTH_EXPO out_exponent_sub);
         function [4:0] normalize4;
                 input `WIDTH_SIGNIF __number;
                 casex ((__number))
@@ -72,13 +72,18 @@ module ieee_adder_normalize_sub( input `WIDTH_SIGNIF out_signif_sub_1, output `W
         wire `WIDTH_SIGNIF out_signif_sub_2;
         assign out_signif_sub_2 = out_signif_sub_1 << normal_shift;
         assign out_exponent_sub = big_expo - normal_shift;
-        assign out_signif_sub = out_signif_sub_2[`SIGNIF_LEN-1:0];
+        assign out_signif_sub = out_signif_sub_2;
 endmodule
-module ieee_adder_final( input signA, input signB, input inputA_bigger_inputB, input `WIDTH_EXPO out_exponent_add, input `WIDTH_SIGNIF_PART out_signif_add, input `WIDTH_EXPO out_exponent_sub, input `WIDTH_SIGNIF_PART out_signif_sub, input signif_nonzero, input `WIDTH_EXPO shift_amount, output `WIDTH_NUMBER outputC);
+module ieee_adder_round( input `WIDTH_SIGNIF number, output `WIDTH_SIGNIF_PART round_signif);
+        wire `WIDTH_SIGNIF_PART number1;
+        assign number1 = number[`SIGNIF_LEN-1:0];
+        assign round_signif = { ((number[-1:-`GUARD_BITS] > `ROUND_EVEN) || (number[-1:-`GUARD_BITS] == `ROUND_EVEN && number[0] == 1'b1 )) ? number1 + 1 : number1 };
+endmodule
+module ieee_adder_final( input signA, input signB, input inputA_bigger_inputB, input `WIDTH_EXPO out_exponent_add, input `WIDTH_SIGNIF_PART round_signif_add, input `WIDTH_EXPO out_exponent_sub, input `WIDTH_SIGNIF_PART round_signif_sub, input signif_nonzero, input `WIDTH_EXPO shift_amount, output `WIDTH_NUMBER outputC);
         wire neg_op;
         assign neg_op = signA ^ signB;
         wire out_sign;
         assign out_sign = inputA_bigger_inputB ? signA : signB;
         wire nonequal = (|shift_amount) | signif_nonzero;
-        assign outputC = { neg_op ? { nonequal ? {out_sign, out_exponent_sub, out_signif_sub} :	`TOTALBITS'b0 } : {out_sign, out_exponent_add, out_signif_add} };
+        assign outputC = { neg_op ? { nonequal ? {out_sign, out_exponent_sub, round_signif_sub} :	`TOTALBITS'b0 } : {out_sign, out_exponent_add, round_signif_add} };
 endmodule
