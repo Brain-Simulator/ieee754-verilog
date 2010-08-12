@@ -21,7 +21,7 @@ widths = {
 }
 
 stages = [
-	{ #Stage 1
+	{ #Stage
 		'components':[
 			{'name':'prepare_input',
 				'suffix':'A',
@@ -30,12 +30,24 @@ stages = [
 				'suffix':'B',
 				'override_input':{'number':'inputB','add_sub_bit':'add_sub_bit',}},
 			{'name':'compare',},
+		],
+	},
+	{ #Stage
+		'components':[
 			{'name':'shift_signif',},
 			{'name':'swap_signif',},
 			{'name':'bigger_exp'},
 			{'name':'opadd'},
 			{'name':'opsub'},
+		],
+	},
+	{ #Stage
+		'components':[
 			{'name':'normalize_sub',},
+		],
+	},
+	{ #Stage
+		'components':[
 			{'name':'round',
 				'suffix':'_add',
 				'override_input':{'number':'out_signif_add'}},

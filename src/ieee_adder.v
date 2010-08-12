@@ -14,27 +14,6 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	/////////////
 	// STAGE 1 //
 	/////////////
-	//Outputs of module 'bigger_exp' with instance 'bigger_exp'
-	wire `WIDTH_EXPO s1o_big_expo;
-	//Outputs of module 'shift_signif' with instance 'shift_signif'
-	wire `WIDTH_SIGNIF s1o_signifA_shift_preswap;
-	wire `WIDTH_SIGNIF s1o_signifB_shift_preswap;
-	//Outputs of module 'swap_signif' with instance 'swap_signif'
-	wire `WIDTH_SIGNIF s1o_signifA_shift;
-	wire `WIDTH_SIGNIF s1o_signifB_shift;
-	//Outputs of module 'opsub' with instance 'opsub'
-	wire `WIDTH_SIGNIF s1o_out_signif_sub_prenorm;
-	wire  s1o_signif_nonzero;
-	//Outputs of module 'round' with instance 'round_sub'
-	wire `WIDTH_SIGNIF_PART s1o_round_signif_sub;
-	//Outputs of module 'normalize_sub' with instance 'normalize_sub'
-	wire `WIDTH_SIGNIF s1o_out_signif_sub;
-	wire `WIDTH_EXPO s1o_out_exponent_sub;
-	//Outputs of module 'round' with instance 'round_add'
-	wire `WIDTH_SIGNIF_PART s1o_round_signif_add;
-	//Outputs of module 'opadd' with instance 'opadd'
-	wire `WIDTH_SIGNIF s1o_out_signif_add;
-	wire `WIDTH_EXPO s1o_out_exponent_add;
 	//Outputs of module 'compare' with instance 'compare'
 	wire  s1o_expA_bigger_expB;
 	wire  s1o_inputA_bigger_inputB;
@@ -47,65 +26,6 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	wire  s1o_signA;
 	wire `WIDTH_EXPO s1o_exponentA;
 	wire `WIDTH_SIGNIF s1o_signifA;
-	//Outputs of module 'final' with instance 'final'
-	wire `WIDTH_NUMBER s1o_outputC;
-	//Calling instance 'bigger_exp'
-	ieee_adder_bigger_exp S01_ieee_adder_bigger_exp (
-		/*input*/.inputA_bigger_inputB(s1o_inputA_bigger_inputB),
-		/*input*/.exponentA(s1o_exponentA),
-		/*input*/.exponentB(s1o_exponentB),
-		/*output*/.big_expo(s1o_big_expo)
-	);
-	//Calling instance 'shift_signif'
-	ieee_adder_shift_signif S01_ieee_adder_shift_signif (
-		/*input*/.expA_bigger_expB(s1o_expA_bigger_expB),
-		/*input*/.signifA(s1o_signifA),
-		/*input*/.signifB(s1o_signifB),
-		/*input*/.shift_amount(s1o_shift_amount),
-		/*output*/.signifA_shift_preswap(s1o_signifA_shift_preswap),
-		/*output*/.signifB_shift_preswap(s1o_signifB_shift_preswap)
-	);
-	//Calling instance 'swap_signif'
-	ieee_adder_swap_signif S01_ieee_adder_swap_signif (
-		/*input*/.inputA_bigger_inputB(s1o_inputA_bigger_inputB),
-		/*input*/.signifA_shift_preswap(s1o_signifA_shift_preswap),
-		/*input*/.signifB_shift_preswap(s1o_signifB_shift_preswap),
-		/*output*/.signifA_shift(s1o_signifA_shift),
-		/*output*/.signifB_shift(s1o_signifB_shift)
-	);
-	//Calling instance 'opsub'
-	ieee_adder_opsub S01_ieee_adder_opsub (
-		/*input*/.signifA_shift(s1o_signifA_shift),
-		/*input*/.signifB_shift(s1o_signifB_shift),
-		/*input*/.big_expo(s1o_big_expo),
-		/*output*/.out_signif_sub_prenorm(s1o_out_signif_sub_prenorm),
-		/*output*/.signif_nonzero(s1o_signif_nonzero)
-	);
-	//Calling instance 'round_sub'
-	ieee_adder_round S01_ieee_adder_round_sub (
-		/*input*/.number(s1o_out_signif_sub),
-		/*output*/.round_signif(s1o_round_signif_sub)
-	);
-	//Calling instance 'normalize_sub'
-	ieee_adder_normalize_sub S01_ieee_adder_normalize_sub (
-		/*input*/.out_signif_sub_prenorm(s1o_out_signif_sub_prenorm),
-		/*input*/.big_expo(s1o_big_expo),
-		/*output*/.out_signif_sub(s1o_out_signif_sub),
-		/*output*/.out_exponent_sub(s1o_out_exponent_sub)
-	);
-	//Calling instance 'round_add'
-	ieee_adder_round S01_ieee_adder_round_add (
-		/*input*/.number(s1o_out_signif_add),
-		/*output*/.round_signif(s1o_round_signif_add)
-	);
-	//Calling instance 'opadd'
-	ieee_adder_opadd S01_ieee_adder_opadd (
-		/*input*/.signifA_shift(s1o_signifA_shift),
-		/*input*/.signifB_shift(s1o_signifB_shift),
-		/*input*/.big_expo(s1o_big_expo),
-		/*output*/.out_signif_add(s1o_out_signif_add),
-		/*output*/.out_exponent_add(s1o_out_exponent_add)
-	);
 	//Calling instance 'compare'
 	ieee_adder_compare S01_ieee_adder_compare (
 		/*input*/.exponentA(s1o_exponentA),
@@ -132,19 +52,196 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*output*/.exponent(s1o_exponentA),
 		/*output*/.signif(s1o_signifA)
 	);
-	//Calling instance 'final'
-	ieee_adder_final S01_ieee_adder_final (
-		/*input*/.signA(s1o_signA),
-		/*input*/.signB(s1o_signB),
-		/*input*/.inputA_bigger_inputB(s1o_inputA_bigger_inputB),
-		/*input*/.out_exponent_add(s1o_out_exponent_add),
-		/*input*/.round_signif_add(s1o_round_signif_add),
-		/*input*/.out_exponent_sub(s1o_out_exponent_sub),
-		/*input*/.round_signif_sub(s1o_round_signif_sub),
-		/*input*/.signif_nonzero(s1o_signif_nonzero),
-		/*input*/.shift_amount(s1o_shift_amount),
-		/*output*/.outputC(s1o_outputC)
+	//Connect stage 1 to stage 2
+	reg  s2i_expA_bigger_expB;
+	reg  s2i_inputA_bigger_inputB;
+	reg `WIDTH_EXPO s2i_shift_amount;
+	reg  s2i_signB;
+	reg `WIDTH_EXPO s2i_exponentB;
+	reg `WIDTH_SIGNIF s2i_signifB;
+	reg  s2i_signA;
+	reg `WIDTH_EXPO s2i_exponentA;
+	reg `WIDTH_SIGNIF s2i_signifA;
+	always @ (posedge clock_in)
+	begin
+		s2i_expA_bigger_expB <= s1o_expA_bigger_expB;
+		s2i_inputA_bigger_inputB <= s1o_inputA_bigger_inputB;
+		s2i_shift_amount <= s1o_shift_amount;
+		s2i_signB <= s1o_signB;
+		s2i_exponentB <= s1o_exponentB;
+		s2i_signifB <= s1o_signifB;
+		s2i_signA <= s1o_signA;
+		s2i_exponentA <= s1o_exponentA;
+		s2i_signifA <= s1o_signifA;
+	end
+	/////////////
+	// STAGE 2 //
+	/////////////
+	//Outputs of module 'bigger_exp' with instance 'bigger_exp'
+	wire `WIDTH_EXPO s2o_big_expo;
+	//Outputs of module 'shift_signif' with instance 'shift_signif'
+	wire `WIDTH_SIGNIF s2o_signifA_shift_preswap;
+	wire `WIDTH_SIGNIF s2o_signifB_shift_preswap;
+	//Outputs of module 'swap_signif' with instance 'swap_signif'
+	wire `WIDTH_SIGNIF s2o_signifA_shift;
+	wire `WIDTH_SIGNIF s2o_signifB_shift;
+	//Outputs of module 'opsub' with instance 'opsub'
+	wire `WIDTH_SIGNIF s2o_out_signif_sub_prenorm;
+	wire  s2o_signif_nonzero;
+	//Outputs of module 'opadd' with instance 'opadd'
+	wire `WIDTH_SIGNIF s2o_out_signif_add;
+	wire `WIDTH_EXPO s2o_out_exponent_add;
+	//Calling instance 'bigger_exp'
+	ieee_adder_bigger_exp S02_ieee_adder_bigger_exp (
+		/*input*/.inputA_bigger_inputB(s2i_inputA_bigger_inputB),
+		/*input*/.exponentA(s2i_exponentA),
+		/*input*/.exponentB(s2i_exponentB),
+		/*output*/.big_expo(s2o_big_expo)
 	);
-	//Connect stage 1 to pipeline output
-	assign outputC = s1o_outputC;
+	//Calling instance 'shift_signif'
+	ieee_adder_shift_signif S02_ieee_adder_shift_signif (
+		/*input*/.expA_bigger_expB(s2i_expA_bigger_expB),
+		/*input*/.signifA(s2i_signifA),
+		/*input*/.signifB(s2i_signifB),
+		/*input*/.shift_amount(s2i_shift_amount),
+		/*output*/.signifA_shift_preswap(s2o_signifA_shift_preswap),
+		/*output*/.signifB_shift_preswap(s2o_signifB_shift_preswap)
+	);
+	//Calling instance 'swap_signif'
+	ieee_adder_swap_signif S02_ieee_adder_swap_signif (
+		/*input*/.inputA_bigger_inputB(s2i_inputA_bigger_inputB),
+		/*input*/.signifA_shift_preswap(s2o_signifA_shift_preswap),
+		/*input*/.signifB_shift_preswap(s2o_signifB_shift_preswap),
+		/*output*/.signifA_shift(s2o_signifA_shift),
+		/*output*/.signifB_shift(s2o_signifB_shift)
+	);
+	//Calling instance 'opsub'
+	ieee_adder_opsub S02_ieee_adder_opsub (
+		/*input*/.signifA_shift(s2o_signifA_shift),
+		/*input*/.signifB_shift(s2o_signifB_shift),
+		/*input*/.big_expo(s2o_big_expo),
+		/*output*/.out_signif_sub_prenorm(s2o_out_signif_sub_prenorm),
+		/*output*/.signif_nonzero(s2o_signif_nonzero)
+	);
+	//Calling instance 'opadd'
+	ieee_adder_opadd S02_ieee_adder_opadd (
+		/*input*/.signifA_shift(s2o_signifA_shift),
+		/*input*/.signifB_shift(s2o_signifB_shift),
+		/*input*/.big_expo(s2o_big_expo),
+		/*output*/.out_signif_add(s2o_out_signif_add),
+		/*output*/.out_exponent_add(s2o_out_exponent_add)
+	);
+	wire  s2o_inputA_bigger_inputB;
+	assign s2o_inputA_bigger_inputB = s2i_inputA_bigger_inputB;
+	wire `WIDTH_EXPO s2o_shift_amount;
+	assign s2o_shift_amount = s2i_shift_amount;
+	wire  s2o_signB;
+	assign s2o_signB = s2i_signB;
+	wire  s2o_signA;
+	assign s2o_signA = s2i_signA;
+	//Connect stage 2 to stage 3
+	reg  s3i_inputA_bigger_inputB;
+	reg `WIDTH_EXPO s3i_shift_amount;
+	reg  s3i_signB;
+	reg  s3i_signA;
+	reg `WIDTH_EXPO s3i_big_expo;
+	reg `WIDTH_SIGNIF s3i_out_signif_sub_prenorm;
+	reg  s3i_signif_nonzero;
+	reg `WIDTH_SIGNIF s3i_out_signif_add;
+	reg `WIDTH_EXPO s3i_out_exponent_add;
+	always @ (posedge clock_in)
+	begin
+		s3i_inputA_bigger_inputB <= s2o_inputA_bigger_inputB;
+		s3i_shift_amount <= s2o_shift_amount;
+		s3i_signB <= s2o_signB;
+		s3i_signA <= s2o_signA;
+		s3i_big_expo <= s2o_big_expo;
+		s3i_out_signif_sub_prenorm <= s2o_out_signif_sub_prenorm;
+		s3i_signif_nonzero <= s2o_signif_nonzero;
+		s3i_out_signif_add <= s2o_out_signif_add;
+		s3i_out_exponent_add <= s2o_out_exponent_add;
+	end
+	/////////////
+	// STAGE 3 //
+	/////////////
+	//Outputs of module 'normalize_sub' with instance 'normalize_sub'
+	wire `WIDTH_SIGNIF s3o_out_signif_sub;
+	wire `WIDTH_EXPO s3o_out_exponent_sub;
+	//Calling instance 'normalize_sub'
+	ieee_adder_normalize_sub S03_ieee_adder_normalize_sub (
+		/*input*/.out_signif_sub_prenorm(s3i_out_signif_sub_prenorm),
+		/*input*/.big_expo(s3i_big_expo),
+		/*output*/.out_signif_sub(s3o_out_signif_sub),
+		/*output*/.out_exponent_sub(s3o_out_exponent_sub)
+	);
+	wire  s3o_inputA_bigger_inputB;
+	assign s3o_inputA_bigger_inputB = s3i_inputA_bigger_inputB;
+	wire `WIDTH_EXPO s3o_shift_amount;
+	assign s3o_shift_amount = s3i_shift_amount;
+	wire  s3o_signB;
+	assign s3o_signB = s3i_signB;
+	wire  s3o_signA;
+	assign s3o_signA = s3i_signA;
+	wire  s3o_signif_nonzero;
+	assign s3o_signif_nonzero = s3i_signif_nonzero;
+	wire `WIDTH_SIGNIF s3o_out_signif_add;
+	assign s3o_out_signif_add = s3i_out_signif_add;
+	wire `WIDTH_EXPO s3o_out_exponent_add;
+	assign s3o_out_exponent_add = s3i_out_exponent_add;
+	//Connect stage 3 to stage 4
+	reg  s4i_inputA_bigger_inputB;
+	reg `WIDTH_EXPO s4i_shift_amount;
+	reg  s4i_signB;
+	reg  s4i_signA;
+	reg  s4i_signif_nonzero;
+	reg `WIDTH_SIGNIF s4i_out_signif_add;
+	reg `WIDTH_EXPO s4i_out_exponent_add;
+	reg `WIDTH_SIGNIF s4i_out_signif_sub;
+	reg `WIDTH_EXPO s4i_out_exponent_sub;
+	always @ (posedge clock_in)
+	begin
+		s4i_inputA_bigger_inputB <= s3o_inputA_bigger_inputB;
+		s4i_shift_amount <= s3o_shift_amount;
+		s4i_signB <= s3o_signB;
+		s4i_signA <= s3o_signA;
+		s4i_signif_nonzero <= s3o_signif_nonzero;
+		s4i_out_signif_add <= s3o_out_signif_add;
+		s4i_out_exponent_add <= s3o_out_exponent_add;
+		s4i_out_signif_sub <= s3o_out_signif_sub;
+		s4i_out_exponent_sub <= s3o_out_exponent_sub;
+	end
+	/////////////
+	// STAGE 4 //
+	/////////////
+	//Outputs of module 'round' with instance 'round_sub'
+	wire `WIDTH_SIGNIF_PART s4o_round_signif_sub;
+	//Outputs of module 'round' with instance 'round_add'
+	wire `WIDTH_SIGNIF_PART s4o_round_signif_add;
+	//Outputs of module 'final' with instance 'final'
+	wire `WIDTH_NUMBER s4o_outputC;
+	//Calling instance 'round_sub'
+	ieee_adder_round S04_ieee_adder_round_sub (
+		/*input*/.number(s4i_out_signif_sub),
+		/*output*/.round_signif(s4o_round_signif_sub)
+	);
+	//Calling instance 'round_add'
+	ieee_adder_round S04_ieee_adder_round_add (
+		/*input*/.number(s4i_out_signif_add),
+		/*output*/.round_signif(s4o_round_signif_add)
+	);
+	//Calling instance 'final'
+	ieee_adder_final S04_ieee_adder_final (
+		/*input*/.signA(s4i_signA),
+		/*input*/.signB(s4i_signB),
+		/*input*/.inputA_bigger_inputB(s4i_inputA_bigger_inputB),
+		/*input*/.out_exponent_add(s4i_out_exponent_add),
+		/*input*/.round_signif_add(s4o_round_signif_add),
+		/*input*/.out_exponent_sub(s4i_out_exponent_sub),
+		/*input*/.round_signif_sub(s4o_round_signif_sub),
+		/*input*/.signif_nonzero(s4i_signif_nonzero),
+		/*input*/.shift_amount(s4i_shift_amount),
+		/*output*/.outputC(s4o_outputC)
+	);
+	//Connect stage 4 to pipeline output
+	assign outputC = s4o_outputC;
 endmodule

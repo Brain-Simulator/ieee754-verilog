@@ -43,8 +43,8 @@ endmodule
 module ieee_adder_normalize_sub( input `WIDTH_SIGNIF out_signif_sub_prenorm, output `WIDTH_SIGNIF out_signif_sub, input `WIDTH_EXPO big_expo, output `WIDTH_EXPO out_exponent_sub);
         function `WIDTH_EXPO normalize4;
                 input `WIDTH_SIGNIF __number;
-                casex ((__number))
-                        { 0'b0,1'b1,26'bx}: normalize4 = 0;
+                casex (__number)
+                        {      1'b1,26'bx}: normalize4 = 0;
                         { 1'b0,1'b1,25'bx}: normalize4 = 1;
                         { 2'b0,1'b1,24'bx}: normalize4 = 2;
                         { 3'b0,1'b1,23'bx}: normalize4 = 3;
@@ -70,7 +70,7 @@ module ieee_adder_normalize_sub( input `WIDTH_SIGNIF out_signif_sub_prenorm, out
                         {23'b0,1'b1, 3'bx}: normalize4 = 23;
                         {24'b0,1'b1, 2'bx}: normalize4 = 24;
                         {25'b0,1'b1, 1'bx}: normalize4 = 25;
-                        {26'b0,1'b1, 0'bx}: normalize4 = 26;
+                        {26'b0,1'b1      }: normalize4 = 26;
                         default: normalize4 = 31;
                 endcase
         endfunction
