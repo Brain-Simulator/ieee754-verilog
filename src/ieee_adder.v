@@ -17,13 +17,13 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	//Outputs of module 'bigger_exp' with instance 'bigger_exp'
 	wire `WIDTH_EXPO s1o_big_expo;
 	//Outputs of module 'shift_signif' with instance 'shift_signif'
-	wire `WIDTH_SIGNIF s1o_signifA_shift_1;
-	wire `WIDTH_SIGNIF s1o_signifB_shift_1;
+	wire `WIDTH_SIGNIF s1o_signifA_shift_preswap;
+	wire `WIDTH_SIGNIF s1o_signifB_shift_preswap;
 	//Outputs of module 'swap_signif' with instance 'swap_signif'
 	wire `WIDTH_SIGNIF s1o_signifA_shift;
 	wire `WIDTH_SIGNIF s1o_signifB_shift;
 	//Outputs of module 'opsub' with instance 'opsub'
-	wire `WIDTH_SIGNIF s1o_out_signif_sub_1;
+	wire `WIDTH_SIGNIF s1o_out_signif_sub_prenorm;
 	wire  s1o_signif_nonzero;
 	//Outputs of module 'round' with instance 'round_sub'
 	wire `WIDTH_SIGNIF_PART s1o_round_signif_sub;
@@ -62,14 +62,14 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*input*/.signifA(s1o_signifA),
 		/*input*/.signifB(s1o_signifB),
 		/*input*/.shift_amount(s1o_shift_amount),
-		/*output*/.signifA_shift_1(s1o_signifA_shift_1),
-		/*output*/.signifB_shift_1(s1o_signifB_shift_1)
+		/*output*/.signifA_shift_preswap(s1o_signifA_shift_preswap),
+		/*output*/.signifB_shift_preswap(s1o_signifB_shift_preswap)
 	);
 	//Calling instance 'swap_signif'
 	ieee_adder_swap_signif S01_ieee_adder_swap_signif (
 		/*input*/.inputA_bigger_inputB(s1o_inputA_bigger_inputB),
-		/*input*/.signifA_shift_1(s1o_signifA_shift_1),
-		/*input*/.signifB_shift_1(s1o_signifB_shift_1),
+		/*input*/.signifA_shift_preswap(s1o_signifA_shift_preswap),
+		/*input*/.signifB_shift_preswap(s1o_signifB_shift_preswap),
 		/*output*/.signifA_shift(s1o_signifA_shift),
 		/*output*/.signifB_shift(s1o_signifB_shift)
 	);
@@ -78,7 +78,7 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*input*/.signifA_shift(s1o_signifA_shift),
 		/*input*/.signifB_shift(s1o_signifB_shift),
 		/*input*/.big_expo(s1o_big_expo),
-		/*output*/.out_signif_sub_1(s1o_out_signif_sub_1),
+		/*output*/.out_signif_sub_prenorm(s1o_out_signif_sub_prenorm),
 		/*output*/.signif_nonzero(s1o_signif_nonzero)
 	);
 	//Calling instance 'round_sub'
@@ -88,7 +88,7 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	);
 	//Calling instance 'normalize_sub'
 	ieee_adder_normalize_sub S01_ieee_adder_normalize_sub (
-		/*input*/.out_signif_sub_1(s1o_out_signif_sub_1),
+		/*input*/.out_signif_sub_prenorm(s1o_out_signif_sub_prenorm),
 		/*input*/.big_expo(s1o_big_expo),
 		/*output*/.out_signif_sub(s1o_out_signif_sub),
 		/*output*/.out_exponent_sub(s1o_out_exponent_sub)

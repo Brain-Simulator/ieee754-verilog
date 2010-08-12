@@ -88,13 +88,12 @@ begin
   `TEST1(`CS1dot5,`CS7dot5)
   `TEST1(`CS8,`CS0dot5)
   `TEST1(`CS8,`CS1dot5)
-  /*
-  */
    end
    else
    begin
 	//test one instance
-	`TEST1_OP(`CS4,`CS0dot5)
+	{inputA, inputB} = {32'b10000000110000000000000000000001,32'b00000000100000000000000000000000};
+	#1 $display("TEST1 %b %b %b", inputA, inputB, outputC);
    end
    //$display("TEST1 %b %b %b", inputA, inputB, outputC);
   #`DELAY $finish;

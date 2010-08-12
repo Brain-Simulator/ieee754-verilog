@@ -68,6 +68,14 @@ int main(int argc, char *argv[])
 			while(getchar() != '\n');//skip until end of the line
 			continue;
 		}
+		if(! fequal(correct1, correct2))
+		{
+			char scorrect1[35];
+			char scorrect2[35];
+			float2str(correct1, scorrect1);
+			float2str(correct2, scorrect2);
+			printf(" ********MISMATCH\n%s\n%s\n********\n", scorrect1, scorrect2);
+		}
 		
 		if(! fequal(correct1, C))
 		{
@@ -75,7 +83,7 @@ int main(int argc, char *argv[])
 			char scorrect2[35];
 			float2str(correct1, scorrect1);
 			float2str(correct2, scorrect2);
-			printf("Test failed: %e + %e = %e != %e\n",A, B, correct1, C);
+			printf("Test #%d failed: %e + %e = %e != %e\n", t_count+1, A, B, correct1, C);
 			printf("  A %s\n +B %s\n == %s\n   (%s)\n != %s\n", inA, inB, scorrect1, scorrect2, outC);
 		}
 		else
