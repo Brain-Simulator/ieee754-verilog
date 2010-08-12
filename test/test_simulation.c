@@ -75,8 +75,8 @@ int main(int argc, char *argv[])
 			char scorrect2[35];
 			float2str(correct1, scorrect1);
 			float2str(correct2, scorrect2);
-			printf("Test failed: %f + %f = %f != %f\n",A, B, correct1, C);
-			printf("%5s %s + %s = \n == %s\n   (%s)\n != %s\n","", inA, inB, scorrect1, scorrect2, outC);
+			printf("Test failed: %e + %e = %e != %e\n",A, B, correct1, C);
+			printf("  A %s\n +B %s\n == %s\n   (%s)\n != %s\n", inA, inB, scorrect1, scorrect2, outC);
 		}
 		else
 		{
