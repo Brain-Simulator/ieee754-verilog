@@ -60,7 +60,7 @@ begin
 			`TEST1_OP(1<<31 ^ val2, val1)\
 			`TEST1_OP(1<<31 ^ val1, 1<<31 ^ val2)\
 			`TEST1_OP(1<<31 ^ val2, 1<<31 ^ val1)
-  if(0)//test all
+  if(1)//test all
   begin
   `TEST1(`CS1dot5,`CS0dot5)
   `TEST1(`CS1dot5,`CS1dot5)

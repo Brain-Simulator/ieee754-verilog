@@ -32,7 +32,7 @@ module ieee_adder_opadd( input `WIDTH_SIGNIF signifA_shift, input `WIDTH_SIGNIF 
         wire `WIDTH_EXPO out_exponent_add_1;
         wire exponent_overflow_add;
         assign {exponent_overflow_add, out_exponent_add_1} = carry_signif ? 1 + big_expo : {1'b0, big_expo};
-        assign out_signif_add = { carry_signif ? out_signif_add_1[`SIGNIF_LEN:-`GUARD_BITS+1] :out_signif_add_1[`SIGNIF_LEN-1:`GUARD_BITS] };
+        assign out_signif_add = { carry_signif ? {1'b1, out_signif_add_1[`SIGNIF_LEN:-`GUARD_BITS+1]} :out_signif_add_1 };
         assign out_exponent_add = out_exponent_add_1;
 endmodule
 module ieee_adder_opsub( input `WIDTH_SIGNIF signifA_shift, input `WIDTH_SIGNIF signifB_shift, input `WIDTH_EXPO big_expo, output `WIDTH_SIGNIF out_signif_sub_1, output signif_nonzero);

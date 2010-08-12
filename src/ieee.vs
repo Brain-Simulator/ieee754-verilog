@@ -71,8 +71,8 @@ module ieee_adder_opadd(
 	{exponent_overflow_add, out_exponent_add_1} := carry_signif ? 1 + big_expo : {1'b0, big_expo}
 	out_signif_add := {
 		carry_signif ? 
-			out_signif_add_1[`SIGNIF_LEN:-`GUARD_BITS+1] 
-			:out_signif_add_1[`SIGNIF_LEN-1:`GUARD_BITS]
+			{1'b1, out_signif_add_1[`SIGNIF_LEN:-`GUARD_BITS+1]} 
+			:out_signif_add_1
 	}
 	out_exponent_add := out_exponent_add_1
 

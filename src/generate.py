@@ -198,7 +198,7 @@ for stage_num, stage in enumerate(stages[1:], start = 1):
 	for name in stage['order']:
 		instance = comp_appear[name]
 		out.write("\t//Calling instance '%s'\n" % (name))
-		out.write("\t%s_%s S%d_%s_%s (\n\t\t" %( 
+		out.write("\t%s_%s S%02d_%s_%s (\n\t\t" %( 
 			pipeline_name, instance['module_name'], 
 			stage_num, pipeline_name ,name))
 		inout = []

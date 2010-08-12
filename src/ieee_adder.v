@@ -50,14 +50,14 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	//Outputs of module 'final' with instance 'final'
 	wire `WIDTH_NUMBER s1o_outputC;
 	//Calling instance 'bigger_exp'
-	ieee_adder_bigger_exp S1_ieee_adder_bigger_exp (
+	ieee_adder_bigger_exp S01_ieee_adder_bigger_exp (
 		/*input*/.inputA_bigger_inputB(s1o_inputA_bigger_inputB),
 		/*input*/.exponentA(s1o_exponentA),
 		/*input*/.exponentB(s1o_exponentB),
 		/*output*/.big_expo(s1o_big_expo)
 	);
 	//Calling instance 'shift_signif'
-	ieee_adder_shift_signif S1_ieee_adder_shift_signif (
+	ieee_adder_shift_signif S01_ieee_adder_shift_signif (
 		/*input*/.expA_bigger_expB(s1o_expA_bigger_expB),
 		/*input*/.signifA(s1o_signifA),
 		/*input*/.signifB(s1o_signifB),
@@ -66,7 +66,7 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*output*/.signifB_shift_1(s1o_signifB_shift_1)
 	);
 	//Calling instance 'swap_signif'
-	ieee_adder_swap_signif S1_ieee_adder_swap_signif (
+	ieee_adder_swap_signif S01_ieee_adder_swap_signif (
 		/*input*/.inputA_bigger_inputB(s1o_inputA_bigger_inputB),
 		/*input*/.signifA_shift_1(s1o_signifA_shift_1),
 		/*input*/.signifB_shift_1(s1o_signifB_shift_1),
@@ -74,7 +74,7 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*output*/.signifB_shift(s1o_signifB_shift)
 	);
 	//Calling instance 'opsub'
-	ieee_adder_opsub S1_ieee_adder_opsub (
+	ieee_adder_opsub S01_ieee_adder_opsub (
 		/*input*/.signifA_shift(s1o_signifA_shift),
 		/*input*/.signifB_shift(s1o_signifB_shift),
 		/*input*/.big_expo(s1o_big_expo),
@@ -82,24 +82,24 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*output*/.signif_nonzero(s1o_signif_nonzero)
 	);
 	//Calling instance 'round_sub'
-	ieee_adder_round S1_ieee_adder_round_sub (
+	ieee_adder_round S01_ieee_adder_round_sub (
 		/*input*/.number(s1o_out_signif_sub),
 		/*output*/.round_signif(s1o_round_signif_sub)
 	);
 	//Calling instance 'normalize_sub'
-	ieee_adder_normalize_sub S1_ieee_adder_normalize_sub (
+	ieee_adder_normalize_sub S01_ieee_adder_normalize_sub (
 		/*input*/.out_signif_sub_1(s1o_out_signif_sub_1),
 		/*input*/.big_expo(s1o_big_expo),
 		/*output*/.out_signif_sub(s1o_out_signif_sub),
 		/*output*/.out_exponent_sub(s1o_out_exponent_sub)
 	);
 	//Calling instance 'round_add'
-	ieee_adder_round S1_ieee_adder_round_add (
+	ieee_adder_round S01_ieee_adder_round_add (
 		/*input*/.number(s1o_out_signif_add),
 		/*output*/.round_signif(s1o_round_signif_add)
 	);
 	//Calling instance 'opadd'
-	ieee_adder_opadd S1_ieee_adder_opadd (
+	ieee_adder_opadd S01_ieee_adder_opadd (
 		/*input*/.signifA_shift(s1o_signifA_shift),
 		/*input*/.signifB_shift(s1o_signifB_shift),
 		/*input*/.big_expo(s1o_big_expo),
@@ -107,7 +107,7 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*output*/.out_exponent_add(s1o_out_exponent_add)
 	);
 	//Calling instance 'compare'
-	ieee_adder_compare S1_ieee_adder_compare (
+	ieee_adder_compare S01_ieee_adder_compare (
 		/*input*/.exponentA(s1o_exponentA),
 		/*input*/.exponentB(s1o_exponentB),
 		/*input*/.signifA(s1o_signifA),
@@ -117,7 +117,7 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*output*/.shift_amount(s1o_shift_amount)
 	);
 	//Calling instance 'prepare_inputB'
-	ieee_adder_prepare_input S1_ieee_adder_prepare_inputB (
+	ieee_adder_prepare_input S01_ieee_adder_prepare_inputB (
 		/*input*/.add_sub_bit(add_sub_bit),
 		/*input*/.number(inputB),
 		/*output*/.sign(s1o_signB),
@@ -125,7 +125,7 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*output*/.signif(s1o_signifB)
 	);
 	//Calling instance 'prepare_inputA'
-	ieee_adder_prepare_input S1_ieee_adder_prepare_inputA (
+	ieee_adder_prepare_input S01_ieee_adder_prepare_inputA (
 		/*input*/.add_sub_bit(1'b0),
 		/*input*/.number(inputA),
 		/*output*/.sign(s1o_signA),
@@ -133,7 +133,7 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*output*/.signif(s1o_signifA)
 	);
 	//Calling instance 'final'
-	ieee_adder_final S1_ieee_adder_final (
+	ieee_adder_final S01_ieee_adder_final (
 		/*input*/.signA(s1o_signA),
 		/*input*/.signB(s1o_signB),
 		/*input*/.inputA_bigger_inputB(s1o_inputA_bigger_inputB),
