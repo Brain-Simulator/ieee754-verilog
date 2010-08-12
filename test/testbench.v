@@ -23,6 +23,8 @@ wire [31:0] outputC;
 `define CS7dot5 {1'b0, 8'b10000001, 3'b111,{20{1'b0}}}//7.5
 `define CS8 {1'b0, 8'b10000010, {23{1'b0}}}//8.0
 
+`define DELAY 6
+
 always
 begin
 	#1 clk = ! clk;
@@ -35,6 +37,20 @@ ieee_adder ADDER(
 	.inputB(inputB),
 	.outputC(outputC)
 );
+	task TEST1;
+		input `WIDTH_NUMBER val1;
+		input `WIDTH_NUMBER val2;
+		begin
+		#6 inputA = val1; inputB = val2; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#6 inputA = val2; inputB = val1; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#6 inputA = val1; inputB = 1<<31 ^ val2; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#6 inputA = val2; inputB = 1<<31 ^ val1; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#6 inputA = 1<<31 ^ val1; inputB = val2; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#6 inputA = 1<<31 ^ val2; inputB = val1; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#6 inputA = 1<<31 ^ val1; inputB = 1<<31 ^ val2; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#6 inputA = 1<<31 ^ val2; inputB = 1<<31 ^ val1; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		end
+	endtask
 
 initial
 begin
@@ -46,48 +62,34 @@ begin
   add_sub = 0; //addition
   
   {inputA,inputB} = 0;
-  `define DELAY 6
-  `define TEST1_OP(val1,val2)\
-			#`DELAY {inputA,inputB} = {val1,val2}; \
-			#`DELAY $display("TEST1 %b %b %b", inputA, inputB, outputC); \
-  
-  `define TEST1(val1,val2) \
-			`TEST1_OP(val1,val2)\
-			`TEST1_OP(val2,val1)\
-			`TEST1_OP(val1, 1<<31 ^ val2)\
-			`TEST1_OP(val2, 1<<31 ^ val1)\
-			`TEST1_OP(1<<31 ^ val1, val2)\
-			`TEST1_OP(1<<31 ^ val2, val1)\
-			`TEST1_OP(1<<31 ^ val1, 1<<31 ^ val2)\
-			`TEST1_OP(1<<31 ^ val2, 1<<31 ^ val1)
   if(1)//test all
   begin
-  `TEST1(`CS1dot5,`CS0dot5)
-  `TEST1(`CS1dot5,`CS1dot5)
-  `TEST1(`CS0dot5,`CS0dot5)
-  `TEST1(`CS1,`CS1)
-  `TEST1(`CS2,`CS2)
-  `TEST1(`CS1,`CS2)
-  `TEST1(`CS3,`CS3)
-  `TEST1(`CS1,`CS3)
-  `TEST1(`CS4,`CS4)
-  `TEST1(`CS3,`CS4)
-  `TEST1(`CS2,`CS4)
-  `TEST1(`CS4,`CS0dot5)
-  `TEST1(`CS4,`CS1dot5)
-  `TEST1(`CS5,`CS4)
-  `TEST1(`CS5,`CS5)
-  `TEST1(`CS0,`CS0)
-  `TEST1(`CS1,`CS0)
-  `TEST1(`CS6,`CS1)
-  `TEST1(`CS6,`CS0dot5)
-  `TEST1(`CS7,`CS6)
-  `TEST1(`CS8,`CS8)
-  `TEST1(`CS8,`CS7)
-  `TEST1(`CS0dot5,`CS7dot5)
-  `TEST1(`CS1dot5,`CS7dot5)
-  `TEST1(`CS8,`CS0dot5)
-  `TEST1(`CS8,`CS1dot5)
+	  TEST1(`CS1dot5,`CS0dot5);
+	  TEST1(`CS1dot5,`CS1dot5);
+	  TEST1(`CS0dot5,`CS0dot5);
+	  TEST1(`CS1,`CS1);
+	  TEST1(`CS2,`CS2);
+	  TEST1(`CS1,`CS2);
+	  TEST1(`CS3,`CS3);
+	  TEST1(`CS1,`CS3);
+	  TEST1(`CS4,`CS4);
+	  TEST1(`CS3,`CS4);
+	  TEST1(`CS2,`CS4);
+	  TEST1(`CS4,`CS0dot5);
+	  TEST1(`CS4,`CS1dot5);
+	  TEST1(`CS5,`CS4);
+	  TEST1(`CS5,`CS5);
+	  TEST1(`CS0,`CS0);
+	  TEST1(`CS1,`CS0);
+	  TEST1(`CS6,`CS1);
+	  TEST1(`CS6,`CS0dot5);
+	  TEST1(`CS7,`CS6);
+	  TEST1(`CS8,`CS8);
+	  TEST1(`CS8,`CS7);
+	  TEST1(`CS0dot5,`CS7dot5);
+	  TEST1(`CS1dot5,`CS7dot5);
+	  TEST1(`CS8,`CS0dot5);
+	  TEST1(`CS8,`CS1dot5);
    end
    else
    begin
@@ -96,7 +98,7 @@ begin
 	#1 $display("TEST1 %b %b %b", inputA, inputB, outputC);
    end
    //$display("TEST1 %b %b %b", inputA, inputB, outputC);
-  #`DELAY $finish;
+  #6 $finish;
 end
 
 endmodule
