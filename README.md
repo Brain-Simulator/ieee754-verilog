@@ -11,5 +11,5 @@ Written in verilog for compilers/simulators:
 Testing
 =======
 
-Succeded 4202 test, Failed 1350 tests
-Sucess: 75.68%
+    Succeded 80870 test, Failed 11546 tests
+    Sucess: 87.51%
