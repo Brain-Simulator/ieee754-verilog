@@ -8,7 +8,7 @@ Written in verilog for compilers/simulators:
 
 * `VCS` (Verilog Compiled Simulator)
 
-Testing
-=======
+Verification
+============
     Succeded 554941 test, Failed 29871 tests
     Sucess: 94.89%

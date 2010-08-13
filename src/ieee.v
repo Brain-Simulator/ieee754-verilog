@@ -1,10 +1,14 @@
 `include "src/defines.v"
-module ieee_adder_prepare_input( input add_sub_bit, input `WIDTH_NUMBER number, output sign, output `WIDTH_EXPO exponent, output `WIDTH_SIGNIF signif);
+module ieee_adder_prepare_input( input add_sub_bit, input `WIDTH_NUMBER number, output sign, output `WIDTH_EXPO exponent, output `WIDTH_SIGNIF signif, output isnan, output isinf);
         //Take input and convert it to suitable format.
         assign sign = number[`LASTBIT] ^ add_sub_bit;
         assign exponent = number[`EXPO_LASTBIT:`EXPO_FIRSTBIT];
         //Add bit 1 in front in case that exponent is non-zero
         assign signif = {|exponent, number[`SIGNIF_LASTBIT:`SIGNIF_FIRSTBIT], `GUARD_BITS'b0};
+        wire expo_full = & exponent;
+        wire signif_nonzero = | number[`SIGNIF_LASTBIT:`SIGNIF_FIRSTBIT];
+        assign isnan = expo_full && signif_nonzero;
+        assign isinf = expo_full && !signif_nonzero;
 endmodule
 module ieee_adder_compare( input `WIDTH_EXPO exponentA, input `WIDTH_EXPO exponentB, input `WIDTH_SIGNIF signifA, input `WIDTH_SIGNIF signifB, output expA_bigger_expB, output inputA_bigger_inputB, output `WIDTH_EXPO shift_amount);
         // Compare exponents and significands between inputs
@@ -88,11 +92,12 @@ module ieee_adder_round( input `WIDTH_SIGNIF number, output `WIDTH_SIGNIF_PART r
         assign number1 = number[`SIGNIF_LEN-1:0];
         assign round_signif = { ((number[-1:-`GUARD_BITS] > `ROUND_EVEN) || (number[-1:-`GUARD_BITS] == `ROUND_EVEN && number[0] == 1'b1 )) ? number1 + 1 : number1 };
 endmodule
-module ieee_adder_final( input signA, input signB, input inputA_bigger_inputB, input `WIDTH_EXPO out_exponent_add, input `WIDTH_SIGNIF_PART round_signif_add, input `WIDTH_EXPO out_exponent_sub, input `WIDTH_SIGNIF_PART round_signif_sub, input signif_nonzero, input `WIDTH_EXPO shift_amount, output `WIDTH_NUMBER outputC);
+module ieee_adder_final( input signA, input signB, input inputA_bigger_inputB, input `WIDTH_EXPO out_exponent_add, input `WIDTH_SIGNIF_PART round_signif_add, input `WIDTH_EXPO out_exponent_sub, input `WIDTH_SIGNIF_PART round_signif_sub, input signif_nonzero, input `WIDTH_EXPO shift_amount, input isnanA, input isnanB, input isinfA, input isinfB, output `WIDTH_NUMBER outputC);
         wire neg_op = signA ^ signB;
         wire out_sign = inputA_bigger_inputB ? signA : signB;
         wire nonequal = (|shift_amount) | signif_nonzero;
         wire is_infinity = neg_op ? (out_exponent_sub == `EXPO_ONES) : (out_exponent_add == `EXPO_ONES);
         wire `WIDTH_NUMBER out_infinity = {out_sign, `EXPO_ONES, `SIGNIF_LEN'b0};
-        assign outputC = is_infinity ? out_infinity : { neg_op ? { nonequal ? {out_sign, out_exponent_sub, round_signif_sub} :	`TOTALBITS'b0 } : {out_sign, out_exponent_add, round_signif_add} };
+        wire `WIDTH_NUMBER out_nan =  {1'b1, `EXPO_ONES, `SIGNIF_LEN'b1111};
+        assign outputC = (isnanA || isnanB) ? out_nan : is_infinity ? out_infinity : { neg_op ? { nonequal ? {out_sign, out_exponent_sub, round_signif_sub} :	`TOTALBITS'b0 } : {out_sign, out_exponent_add, round_signif_add} };
 endmodule

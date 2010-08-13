@@ -22,10 +22,14 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	wire  s1o_signB;
 	wire `WIDTH_EXPO s1o_exponentB;
 	wire `WIDTH_SIGNIF s1o_signifB;
+	wire  s1o_isnanB;
+	wire  s1o_isinfB;
 	//Outputs of module 'prepare_input' with instance 'prepare_inputA'
 	wire  s1o_signA;
 	wire `WIDTH_EXPO s1o_exponentA;
 	wire `WIDTH_SIGNIF s1o_signifA;
+	wire  s1o_isnanA;
+	wire  s1o_isinfA;
 	//Calling instance 'compare'
 	ieee_adder_compare S01_ieee_adder_compare (
 		/*input*/.exponentA(s1o_exponentA),
@@ -42,7 +46,9 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*input*/.number(inputB),
 		/*output*/.sign(s1o_signB),
 		/*output*/.exponent(s1o_exponentB),
-		/*output*/.signif(s1o_signifB)
+		/*output*/.signif(s1o_signifB),
+		/*output*/.isnan(s1o_isnanB),
+		/*output*/.isinf(s1o_isinfB)
 	);
 	//Calling instance 'prepare_inputA'
 	ieee_adder_prepare_input S01_ieee_adder_prepare_inputA (
@@ -50,7 +56,9 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*input*/.number(inputA),
 		/*output*/.sign(s1o_signA),
 		/*output*/.exponent(s1o_exponentA),
-		/*output*/.signif(s1o_signifA)
+		/*output*/.signif(s1o_signifA),
+		/*output*/.isnan(s1o_isnanA),
+		/*output*/.isinf(s1o_isinfA)
 	);
 	//Connect stage 1 to stage 2
 	reg  s2i_expA_bigger_expB;
@@ -59,9 +67,13 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	reg  s2i_signB;
 	reg `WIDTH_EXPO s2i_exponentB;
 	reg `WIDTH_SIGNIF s2i_signifB;
+	reg  s2i_isnanB;
+	reg  s2i_isinfB;
 	reg  s2i_signA;
 	reg `WIDTH_EXPO s2i_exponentA;
 	reg `WIDTH_SIGNIF s2i_signifA;
+	reg  s2i_isnanA;
+	reg  s2i_isinfA;
 	always @ (posedge clock_in)
 	begin
 		s2i_expA_bigger_expB <= s1o_expA_bigger_expB;
@@ -70,9 +82,13 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		s2i_signB <= s1o_signB;
 		s2i_exponentB <= s1o_exponentB;
 		s2i_signifB <= s1o_signifB;
+		s2i_isnanB <= s1o_isnanB;
+		s2i_isinfB <= s1o_isinfB;
 		s2i_signA <= s1o_signA;
 		s2i_exponentA <= s1o_exponentA;
 		s2i_signifA <= s1o_signifA;
+		s2i_isnanA <= s1o_isnanA;
+		s2i_isinfA <= s1o_isinfA;
 	end
 	/////////////
 	// STAGE 2 //
@@ -137,13 +153,25 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	assign s2o_shift_amount = s2i_shift_amount;
 	wire  s2o_signB;
 	assign s2o_signB = s2i_signB;
+	wire  s2o_isnanB;
+	assign s2o_isnanB = s2i_isnanB;
+	wire  s2o_isinfB;
+	assign s2o_isinfB = s2i_isinfB;
 	wire  s2o_signA;
 	assign s2o_signA = s2i_signA;
+	wire  s2o_isnanA;
+	assign s2o_isnanA = s2i_isnanA;
+	wire  s2o_isinfA;
+	assign s2o_isinfA = s2i_isinfA;
 	//Connect stage 2 to stage 3
 	reg  s3i_inputA_bigger_inputB;
 	reg `WIDTH_EXPO s3i_shift_amount;
 	reg  s3i_signB;
+	reg  s3i_isnanB;
+	reg  s3i_isinfB;
 	reg  s3i_signA;
+	reg  s3i_isnanA;
+	reg  s3i_isinfA;
 	reg `WIDTH_EXPO s3i_big_expo;
 	reg `WIDTH_SIGNIF s3i_out_signif_sub_prenorm;
 	reg  s3i_signif_nonzero;
@@ -154,7 +182,11 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		s3i_inputA_bigger_inputB <= s2o_inputA_bigger_inputB;
 		s3i_shift_amount <= s2o_shift_amount;
 		s3i_signB <= s2o_signB;
+		s3i_isnanB <= s2o_isnanB;
+		s3i_isinfB <= s2o_isinfB;
 		s3i_signA <= s2o_signA;
+		s3i_isnanA <= s2o_isnanA;
+		s3i_isinfA <= s2o_isinfA;
 		s3i_big_expo <= s2o_big_expo;
 		s3i_out_signif_sub_prenorm <= s2o_out_signif_sub_prenorm;
 		s3i_signif_nonzero <= s2o_signif_nonzero;
@@ -180,8 +212,16 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	assign s3o_shift_amount = s3i_shift_amount;
 	wire  s3o_signB;
 	assign s3o_signB = s3i_signB;
+	wire  s3o_isnanB;
+	assign s3o_isnanB = s3i_isnanB;
+	wire  s3o_isinfB;
+	assign s3o_isinfB = s3i_isinfB;
 	wire  s3o_signA;
 	assign s3o_signA = s3i_signA;
+	wire  s3o_isnanA;
+	assign s3o_isnanA = s3i_isnanA;
+	wire  s3o_isinfA;
+	assign s3o_isinfA = s3i_isinfA;
 	wire  s3o_signif_nonzero;
 	assign s3o_signif_nonzero = s3i_signif_nonzero;
 	wire `WIDTH_SIGNIF s3o_out_signif_add;
@@ -192,7 +232,11 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 	reg  s4i_inputA_bigger_inputB;
 	reg `WIDTH_EXPO s4i_shift_amount;
 	reg  s4i_signB;
+	reg  s4i_isnanB;
+	reg  s4i_isinfB;
 	reg  s4i_signA;
+	reg  s4i_isnanA;
+	reg  s4i_isinfA;
 	reg  s4i_signif_nonzero;
 	reg `WIDTH_SIGNIF s4i_out_signif_add;
 	reg `WIDTH_EXPO s4i_out_exponent_add;
@@ -203,7 +247,11 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		s4i_inputA_bigger_inputB <= s3o_inputA_bigger_inputB;
 		s4i_shift_amount <= s3o_shift_amount;
 		s4i_signB <= s3o_signB;
+		s4i_isnanB <= s3o_isnanB;
+		s4i_isinfB <= s3o_isinfB;
 		s4i_signA <= s3o_signA;
+		s4i_isnanA <= s3o_isnanA;
+		s4i_isinfA <= s3o_isinfA;
 		s4i_signif_nonzero <= s3o_signif_nonzero;
 		s4i_out_signif_add <= s3o_out_signif_add;
 		s4i_out_exponent_add <= s3o_out_exponent_add;
@@ -240,6 +288,10 @@ module ieee_adder(add_sub_bit,inputA,inputB,clock_in,outputC);
 		/*input*/.round_signif_sub(s4o_round_signif_sub),
 		/*input*/.signif_nonzero(s4i_signif_nonzero),
 		/*input*/.shift_amount(s4i_shift_amount),
+		/*input*/.isnanA(s4i_isnanA),
+		/*input*/.isnanB(s4i_isnanB),
+		/*input*/.isinfA(s4i_isinfA),
+		/*input*/.isinfB(s4i_isinfB),
 		/*output*/.outputC(s4o_outputC)
 	);
 	//Connect stage 4 to pipeline output

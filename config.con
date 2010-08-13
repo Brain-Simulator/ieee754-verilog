@@ -2,7 +2,7 @@
 lappend search_path ./libs
 
 # Set up libraries
-set target_library core_slow.db
+set target_library core_fast.db
 set link_library "* $target_library"
 set symbol_library "core.sdb"
 
@@ -12,31 +12,31 @@ define_design_lib DEFAULT -path ./analyzed
 ##suppress_message {UID-401}
 ##set gui_auto_start 1
 
-read_verilog -rtl ieee_single.v
-current_design ieee_adder_step1
+read_verilog -rtl src/ieee.v
+read_verilog -rtl src/ieee_adder.v
+current_design ieee_adder
 ungroup -all
 
 # put some load on inputs
-set_load [expr 2 * [load_of ssc_core_slow/inv1a3/A]] [remove_from_collection [all_inputs] [get_ports clock_in]]
+set_load [expr 2 * [load_of ssc_core_fast/inv1a3/A]] [remove_from_collection [all_inputs] [get_ports clock_in]]
 
 # Indicate the capacitive loading on the outputs
-set_load [expr 2 * [load_of ssc_core_slow/inv1a3/A]] [all_outputs]
+set_load [expr 2 * [load_of ssc_core_fast/inv1a3/A]] [all_outputs]
 
 #set_max_area 50000
 
-create_clock -period 13 -name clock_in [get_ports clock_in]
-set_clock_uncertainty -setup 0.5 [get_clocks clock_in]
+create_clock -period 4.3 -name clock_in [get_ports clock_in]
+set_clock_uncertainty -setup 0.2 [get_clocks clock_in]
 
 #constraining input/ouput paths
-set_input_delay 1 -max -clock clock_in [remove_from_collection [all_inputs] [get_ports clock_in]]
-set_output_delay 1 -max -clock clock_in [all_outputs]
+set_input_delay 0.1 -max -clock clock_in [remove_from_collection [all_inputs] [get_ports clock_in]]
+set_output_delay 0.1 -max -clock clock_in [all_outputs]
 
 # Indicate the drive characteristics on the inputs:
 set_driving_cell -lib_cell fdef1a3 [all_inputs]
 
 #check libraries
 link
-
 
 alias rc "report_constraint -all_violators"
 alias cs "compile -scan -ungroup_all"

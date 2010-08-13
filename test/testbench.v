@@ -22,6 +22,7 @@ wire [31:0] outputC;
 `define CS7 {1'b0, 8'b10000001, 2'b11,{21{1'b0}}}//7.0
 `define CS7dot5 {1'b0, 8'b10000001, 3'b111,{20{1'b0}}}//7.5
 `define CS8 {1'b0, 8'b10000010, {23{1'b0}}}//8.0
+`define CSNAN {1'b0, 8'b11111111, {23{1'b1}}}//NaN
 
 `define DELAY 6
 
@@ -90,6 +91,7 @@ begin
 	  TEST1(`CS1dot5,`CS7dot5);
 	  TEST1(`CS8,`CS0dot5);
 	  TEST1(`CS8,`CS1dot5);
+	  TEST1(`CSNAN,`CS3);
    end
    else
    begin
