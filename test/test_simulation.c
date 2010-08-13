@@ -25,16 +25,36 @@ void float2str(float in, char *out)
 	}
 }
 
-int fequal(float a, float b)
+int isnan(char *num)
 {
-	long ai = *(long*)&a;
-	long bi = *(long*)&b;
-	return ai == bi;
+	int i,count;
+	for(i=1;i<=8;i++)
+	{
+		if(num[i] != '1')
+			return 0;
+	}
+	for(i=9; i<=31; i++)
+	{
+		if(num[i] == '1')
+			return 1;
+	}
+	return 0;
+}
+
+int fequal(char *cor, char *out)
+{
+	int corIsNan = isnan(cor);
+	int outIsNan = isnan(out);
+	if(corIsNan ^ outIsNan)
+		return 0;
+	if(corIsNan && outIsNan) /*I don't care, what you say IEEE! NaN==NaN */
+		return 1;
+	return strcmp(cor, out) == 0;
 }
 
 int main(int argc, char *argv[])
 {
-	float A, B, C, correct1, correct2;
+	float A, B, C, correct1;
 	int t_success=0, t_count=0;
 	char inA[70],inB[70],outC[70],corC[70];
 	
@@ -52,7 +72,8 @@ int main(int argc, char *argv[])
 			A = str2float(inA);
 			B = str2float(inB);
 			C = str2float(outC);
-			correct2 = correct1 = A + B;
+			correct1 = A + B;
+			float2str(correct1, corC);
 		}
 		else if(strcmp(inA,"TEST2") == 0)
 		{
@@ -61,30 +82,16 @@ int main(int argc, char *argv[])
 			B = str2float(inB);
 			C = str2float(outC);
 			correct1 = str2float(corC);
-			correct2 = A + B;
 		}
 		else
 		{
 			while(getchar() != '\n');//skip until end of the line
 			continue;
 		}
-		if(! fequal(correct1, correct2))
+		if(! fequal(corC, outC))
 		{
-			char scorrect1[35];
-			char scorrect2[35];
-			float2str(correct1, scorrect1);
-			float2str(correct2, scorrect2);
-			printf(" ********MISMATCH\n%s\n%s\n********\n", scorrect1, scorrect2);
-		}
-		
-		if(! fequal(correct1, C))
-		{
-			char scorrect1[35];
-			char scorrect2[35];
-			float2str(correct1, scorrect1);
-			float2str(correct2, scorrect2);
 			printf("Test #%d failed: %e + %e = %e != %e\n", t_count+1, A, B, correct1, C);
-			printf("  A %s\n +B %s\n == %s\n   (%s)\n != %s\n", inA, inB, scorrect1, scorrect2, outC);
+			printf("  A %s\n +B %s\n == %s\n != %s\n", inA, inB, corC, outC);
 		}
 		else
 		{

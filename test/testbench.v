@@ -41,14 +41,14 @@ ieee_adder ADDER(
 		input `WIDTH_NUMBER val1;
 		input `WIDTH_NUMBER val2;
 		begin
-		#6 inputA = val1; inputB = val2; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
-		#6 inputA = val2; inputB = val1; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
-		#6 inputA = val1; inputB = 1<<31 ^ val2; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
-		#6 inputA = val2; inputB = 1<<31 ^ val1; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
-		#6 inputA = 1<<31 ^ val1; inputB = val2; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
-		#6 inputA = 1<<31 ^ val2; inputB = val1; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
-		#6 inputA = 1<<31 ^ val1; inputB = 1<<31 ^ val2; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
-		#6 inputA = 1<<31 ^ val2; inputB = 1<<31 ^ val1; #6 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#9 inputA = val1; inputB = val2; #9 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#9 inputA = val2; inputB = val1; #9 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#9 inputA = val1; inputB = 1<<31 ^ val2; #9 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#9 inputA = val2; inputB = 1<<31 ^ val1; #9 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#9 inputA = 1<<31 ^ val1; inputB = val2; #9 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#9 inputA = 1<<31 ^ val2; inputB = val1; #9 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#9 inputA = 1<<31 ^ val1; inputB = 1<<31 ^ val2; #9 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+		#9 inputA = 1<<31 ^ val2; inputB = 1<<31 ^ val1; #9 $display("TEST1 %b %b %b", inputA, inputB, outputC);
 		end
 	endtask
 
@@ -94,8 +94,8 @@ begin
    else
    begin
 	//test one instance
-	{inputA, inputB} = {32'b10000000110000000000000000000001,32'b00000000100000000000000000000000};
-	#1 $display("TEST1 %b %b %b", inputA, inputB, outputC);
+	{inputA, inputB} = {32'b11111111011111111111111111111100,32'b11111111000001111111111111111100};
+	#9 $display("TEST2 %b %b %b 111", inputA, inputB, outputC);
    end
    //$display("TEST1 %b %b %b", inputA, inputB, outputC);
   #6 $finish;

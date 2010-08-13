@@ -157,7 +157,7 @@ module ieee_adder_final(
 	wire neg_op = signA ^ signB
 	wire out_sign = inputA_bigger_inputB ? signA : signB
 	wire nonequal = (|shift_amount) | signif_nonzero
-	wire is_infinity = neg_op ? (~out_exponent_sub == 0) : (~out_exponent_add == 0)
+	wire is_infinity = neg_op ? (out_exponent_sub == `EXPO_ONES) : (out_exponent_add == `EXPO_ONES)
 	wire `WIDTH_NUMBER out_infinity = {out_sign, `EXPO_ONES, `SIGNIF_LEN'b0}
 	outputC := is_infinity ? out_infinity : {
 		neg_op ?

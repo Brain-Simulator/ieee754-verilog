@@ -41,8 +41,8 @@ task TEST2;
 	input `WIDTH_NUMBER val2;
 	input `WIDTH_NUMBER corr;
 	begin
-		#6 {inputA, inputB} = {val1, val2};
-		#6 $display("TEST2 %b %b %b %b", inputA, inputB, outputC, corr);
+		#9 {inputA, inputB} = {val1, val2};
+		#9 $display("TEST2 %b %b %b %b", inputA, inputB, outputC, corr);
 	end
 endtask
 
