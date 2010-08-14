@@ -97,38 +97,38 @@ module ieee_adder_normalize_sub(
 	output `WIDTH_SIGNIF out_signif_sub,
 	input `WIDTH_EXPO big_expo,
 	output `WIDTH_EXPO out_exponent_sub):
-	function `WIDTH_EXPO normalize4:
+	function `WIDTH_EXPO normalize5:
+		//Priority encoder for normalization
 		input `WIDTH_SIGNIF __number
-		casex __number:
-			{      1'b1,26'bx}: normalize4 = 0;
-			{ 1'b0,1'b1,25'bx}: normalize4 = 1;
-			{ 2'b0,1'b1,24'bx}: normalize4 = 2;
-			{ 3'b0,1'b1,23'bx}: normalize4 = 3;
-			{ 4'b0,1'b1,22'bx}: normalize4 = 4;
-			{ 5'b0,1'b1,21'bx}: normalize4 = 5;
-			{ 6'b0,1'b1,20'bx}: normalize4 = 6;
-			{ 7'b0,1'b1,19'bx}: normalize4 = 7;
-			{ 8'b0,1'b1,18'bx}: normalize4 = 8;
-			{ 9'b0,1'b1,17'bx}: normalize4 = 9;
-			{10'b0,1'b1,16'bx}: normalize4 = 10;
-			{11'b0,1'b1,15'bx}: normalize4 = 11;
-			{12'b0,1'b1,14'bx}: normalize4 = 12;
-			{13'b0,1'b1,13'bx}: normalize4 = 13;
-			{14'b0,1'b1,12'bx}: normalize4 = 14;
-			{15'b0,1'b1,11'bx}: normalize4 = 15;
-			{16'b0,1'b1,10'bx}: normalize4 = 16;
-			{17'b0,1'b1, 9'bx}: normalize4 = 17;
-			{18'b0,1'b1, 8'bx}: normalize4 = 18;
-			{19'b0,1'b1, 7'bx}: normalize4 = 19;
-			{20'b0,1'b1, 6'bx}: normalize4 = 20;
-			{21'b0,1'b1, 5'bx}: normalize4 = 21;
-			{22'b0,1'b1, 4'bx}: normalize4 = 22;
-			{23'b0,1'b1, 3'bx}: normalize4 = 23;
-			{24'b0,1'b1, 2'bx}: normalize4 = 24;
-			{25'b0,1'b1, 1'bx}: normalize4 = 25;
-			{26'b0,1'b1      }: normalize4 = 26;
-			default: normalize4 = 31;
-	wire `WIDTH_EXPO normal_shift = normalize4(out_signif_sub_prenorm)
+		casex 1'b1:
+			__number[23]: normalize5 = 0;
+			__number[22]: normalize5 = 1;
+			__number[21]: normalize5 = 2;
+			__number[20]: normalize5 = 3;
+			__number[19]: normalize5 = 4;
+			__number[18]: normalize5 = 5;
+			__number[17]: normalize5 = 6;
+			__number[16]: normalize5 = 7;
+			__number[15]: normalize5 = 8;
+			__number[14]: normalize5 = 9;
+			__number[13]: normalize5 = 10;
+			__number[12]: normalize5 = 11;
+			__number[11]: normalize5 = 12;
+			__number[10]: normalize5 = 13;
+			__number[9]: normalize5 = 14;
+			__number[8]: normalize5 = 15;
+			__number[7]: normalize5 = 16;
+			__number[6]: normalize5 = 17;
+			__number[5]: normalize5 = 18;
+			__number[4]: normalize5 = 19;
+			__number[3]: normalize5 = 20;
+			__number[2]: normalize5 = 21;
+			__number[1]: normalize5 = 22;
+			__number[0]: normalize5 = 23;
+			__number[-1]: normalize5 = 24;
+			__number[-2]: normalize5 = 25;
+			__number[-3]: normalize5 = 26;
+	wire `WIDTH_EXPO normal_shift = normalize5(out_signif_sub_prenorm)
 	wire `WIDTH_SIGNIF out_signif_sub_2 = out_signif_sub_prenorm << normal_shift
 	wire `WIDTH_SIGNIF out_signif_sub_3 = out_signif_sub_prenorm << (big_expo - 1)
 	wire borrow
