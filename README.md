@@ -22,3 +22,8 @@ Verification
 ============
     Succeded 554941 test, Failed 29871 tests
     Sucess: 94.89%
+
+Contact
+=======
+
+E-mail: [emiraga@gmail.com](mailto:emiraga@gmail.com)

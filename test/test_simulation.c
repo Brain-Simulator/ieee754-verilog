@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 		}
 		t_count++;
 	}
-	printf("Succeded %d test, Failed %d tests\n", t_success, t_count - t_success);
+	printf("Succeded %d tests, Failed %d tests\n", t_success, t_count - t_success);
 	printf("Sucess: %.2lf%%\n",100 * t_success / (double)t_count );
 	return 0;
 }
